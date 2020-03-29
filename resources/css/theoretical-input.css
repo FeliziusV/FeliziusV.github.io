@@ -1,0 +1,6 @@
+/* styles for theoretical-input-view*/
+
+/* blur effect from schubu pages */
+.content_blur {
+    filter: blur(5px) opacity(50%);
+}
