@@ -11,6 +11,20 @@ img {
   cursor: pointer;
   width: 200px;
 }
+
+body{
+	background-color: #6aa84f !important;;
+	}
+h1{
+	text-align: center ;
+	color: white;
+	font-family: 'Comfortaa';
+}
+p{
+	font-family: 'Comfortaa';
+		color: white;
+
+}
 .container {
   height: 100%;
   vertical-align: middle;
@@ -22,9 +36,9 @@ img {
   width: 150px;
   height: 125px;
   overflow: hidden;
-  background: #f1f1f1;
+  background: #b6d7a8;
   color: white;
-  box-shadow: 0 20px 1px rgb(0, 255, 163);
+  box-shadow: 0 20px 1px rgb(255, 255, 255);
 }
 
 .drop-zones {
