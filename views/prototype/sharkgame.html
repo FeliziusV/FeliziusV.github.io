@@ -15,6 +15,20 @@
     <a href="../../index.html" class="btn btn-primary" style="margin: 1em;"><i class="fa fa-home"></i> Home</a>
   </div>
   <h1>Die Ern&auml;hrung von Haifischen</h1>
-  
-  <script type="application/javascript" src="../../resources/js/basics-drag-and-drop.js"></script>
+<img id="shark" 
+src="../../resources/binary/sharks/great_shark.PNG" alt="shark">
+<p align="center">
+<canvas id="game" width="800" height="500"
+style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.
+</canvas>
+</p>
+  <script>
+window.onload = function() {
+    var canvas = document.getElementById("game");
+    var ctx = canvas.getContext("2d");
+    var img = document.getElementById("shark");
+   ctx.drawImage(img, 10, 10);
+};
+</script>
 </body>
