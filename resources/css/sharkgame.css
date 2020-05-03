@@ -18,3 +18,9 @@ h1{
 	color: white;
 	font-family: 'Comfortaa';
 }
+
+canvas { 
+  background: #eee;
+  display: block; 
+  margin: 0 auto; 
+}
