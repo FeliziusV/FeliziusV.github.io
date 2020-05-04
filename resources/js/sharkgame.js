@@ -18,7 +18,7 @@ $('document').ready(function(){
   //drawing.src = "../../resources/binary/sharks/great_shark.PNG"; // can also be a remote URL e.g. http://
 
   function drawShark() {
-    drawWithParamsCoordsSizeFlipped(shark, x, y, 0.5, true);
+    drawWithParamsCoordsSizeFlipped(shark, x, y, 0.4, true);
   }
    function drawSee() {
     drawWithParamsCoordsSizeFlipped(see, 0, 0, 3, true);
@@ -34,8 +34,9 @@ $('document').ready(function(){
 	drawAnchar();
     x += dx;
     y += dy;
-    toReset = y < 0 || y >= (canvas.height-60);
-
+    if (y < 0) {y=0; toReset=true;}
+    else if (y > canvas.height-60) {y=canvas.height-60; toReset=true;}
+    else toReset = false;
     decelerate(toReset);
   }
 
