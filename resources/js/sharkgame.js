@@ -5,7 +5,11 @@ $('document').ready(function(){
   var y = 20;
   var dx = 0;
   var dy = 0;
-  var drawing = document.getElementById("shark");
+  var shark = document.getElementById("shark");
+  var see = document.getElementById("see");
+  var anchar = document.getElementById("anchar");
+
+
   
   //drawing = new Image();
   //drawing.onload = function() {
@@ -14,12 +18,20 @@ $('document').ready(function(){
   //drawing.src = "../../resources/binary/sharks/great_shark.PNG"; // can also be a remote URL e.g. http://
 
   function drawShark() {
-    drawWithParamsCoordsSizeFlipped(drawing, x, y, 0.5, true);
+    drawWithParamsCoordsSizeFlipped(shark, x, y, 0.5, true);
+  }
+   function drawSee() {
+    drawWithParamsCoordsSizeFlipped(see, 0, 0, 3, true);
+  }
+   function drawAnchar() {
+    drawWithParamsCoordsSizeFlipped(anchar, 550, 400, 0.2, true);
   }
 
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+	drawSee();
     drawShark();
+	drawAnchar();
     x += dx;
     y += dy;
     toReset = y < 0 || y >= (canvas.height-60);
