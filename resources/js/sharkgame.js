@@ -22,6 +22,14 @@ $('document').ready(function(){
     drawShark();
     x += dx;
     y += dy;
+    toReset = y < 0 || y >= (canvas.height-60);
+
+    decelerate(toReset);
+  }
+
+  function decelerate(reset) {
+    if (reset === true) dy = 0;
+    dy = dy - dy/100;
   }
 
   setInterval(draw, 10);
@@ -59,8 +67,8 @@ $('document').ready(function(){
   }
 
   document.addEventListener('keydown', (e) => {
-    if (e.code === "ArrowUp" && y > 10)        y -= 10;
-    else if (e.code === "ArrowDown" && y < (canvas.height-60)) y += 10;
+    if (e.code === "ArrowUp")        dy -= 0.75;
+    else if (e.code === "ArrowDown") dy += 0.75;
     //else if (e.code === "ArrowRight")x += 10;
     //else if (e.code === "ArrowLeft") x -= 10;
   });
