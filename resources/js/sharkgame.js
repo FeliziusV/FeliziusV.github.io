@@ -1,9 +1,9 @@
 $('document').ready(function(){
   var canvas = document.getElementById("game");
   var ctx = canvas.getContext("2d");
-  var x = 0
+  var x = 0;
   var y = 0;
-  var dx = 0.2;
+  var dx = 0;
   var dy = -0.2;
   var drawing = document.getElementById("shark");
   
@@ -24,6 +24,7 @@ $('document').ready(function(){
     x += dx;
     y += dy;
   }
+  
   setInterval(draw, 10);
   
   function drawWithParams(object, x, y) {
@@ -40,8 +41,8 @@ $('document').ready(function(){
 
   function drawWithParams(object, x, y, width, height, rotation, flipped) {
     ctx.save();
-    if(typeof width === "undefined") width = img.width;
-    if(typeof height === "undefined") height = img.height;
+    if(typeof width === "undefined") width = object.width;
+    if(typeof height === "undefined") height = object.height;
 
     ctx.translate(x + width/2, y + height/2);
     var rad = 2 * Math.PI - rotation * Math.PI / 180;    
