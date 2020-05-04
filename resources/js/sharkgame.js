@@ -42,7 +42,7 @@ $('document').ready(function(){
 
   function decelerate(reset) {
     if (reset === true) dy = 0;
-    dy = dy - dy/100;
+    dy = dy - dy/50;
   }
 
   setInterval(draw, 10);
