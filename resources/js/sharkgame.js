@@ -2,9 +2,9 @@ $('document').ready(function(){
   var canvas = document.getElementById("game");
   var ctx = canvas.getContext("2d");
   var x = 0;
-  var y = 0;
+  var y = 20;
   var dx = 0;
-  var dy = -0.2;
+  var dy = 0;
   var drawing = document.getElementById("shark");
   
   //drawing = new Image();
@@ -14,8 +14,7 @@ $('document').ready(function(){
   //drawing.src = "../../resources/binary/sharks/great_shark.PNG"; // can also be a remote URL e.g. http://
 
   function drawShark() {
-    drawWithParams(drawing, x, y);
-    //ctx.drawImage(drawing,x,y);
+    drawWithParamsCoordsSizeFlipped(drawing, x, y, 0.5, true);
   }
 
   function draw() {
@@ -24,19 +23,23 @@ $('document').ready(function(){
     x += dx;
     y += dy;
   }
-  
+
   setInterval(draw, 10);
-  
-  function drawWithParams(object, x, y) {
-    drawWithParams(object, x, y, 1);
+
+  function drawWithParamsCoords(object, x, y) {
+    drawWithParamsCoordsSize(object, x, y, 1);
   }
 
-  function drawWithParams(object, x, y, size) {
-    drawWithParams(object, x, y, size, 0, false);
+  function drawWithParamsCoordsSize(object, x, y, size) {
+    drawWithParamsCoordsSizeFlipped(object, x, y, size, 0, false);
   }
 
-  function drawWithParams(object, x, y, size, rotation, flipped) {
-    drawWithParams(object, x, y, object.height*size, object.width*size, rotation, flipped);
+  function drawWithParamsCoordsSizeFlipped(object, x, y, size, flipped) {
+    drawWithParamsCoordsSizeRotFlipped(object, x, y, size, 0, flipped);
+  }
+
+  function drawWithParamsCoordsSizeRotFlipped(object, x, y, size, rotation, flipped) {
+    drawWithParams(object, x, y, object.width*size, object.height*size, rotation, flipped);
   }
 
   function drawWithParams(object, x, y, width, height, rotation, flipped) {
@@ -54,4 +57,11 @@ $('document').ready(function(){
     ctx.drawImage(object, -width/2, -height/2, width, height);
     ctx.restore();
   }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.code === "ArrowUp" && y > 10)        y -= 10;
+    else if (e.code === "ArrowDown" && y < (canvas.height-60)) y += 10;
+    //else if (e.code === "ArrowRight")x += 10;
+    //else if (e.code === "ArrowLeft") x -= 10;
+  });
 });
