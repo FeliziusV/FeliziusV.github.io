@@ -24,3 +24,78 @@ canvas {
   display: block; 
   margin: 0 auto; 
 }
+
+#shark{
+	display: none;
+}
+
+
+#anchar{
+	display: none;
+}
+#bottle{
+	display: none;
+}
+#rock{
+	display: none;
+}
+#danger{
+	display: none;
+}
+#diver{
+	display: none;
+}
+#dolphin{
+	display: none;
+}
+#blue_fish{
+	display: none;
+}
+#green_fish{
+	display: none;
+}
+#octopus{
+	display: none;
+}
+#plankton{
+	display: none;
+}
+#plankton_blue{
+	display: none;
+}
+#plantation_orange{
+	display: none;
+}
+#plantation_pink{
+	display: none;
+}
+#seahorse_green{
+	display: none;
+}
+#seahorse_pink{
+	display: none;
+}
+#seal{
+	display: none;
+}
+#see{
+	display: none;
+}
+#starfish_orange{
+	display: none;
+}
+#surfer{
+	display: none;
+}
+#treasure{
+	display: none;
+}
+#vegetation_spiky{
+	display: none;
+}
+#seaturtle{
+	display: none;
+}
+
+
+
