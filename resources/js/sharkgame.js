@@ -1,8 +1,11 @@
 $('document').ready(function(){
   var canvas = document.getElementById("game");
   var ctx = canvas.getContext("2d");
-  var x = 0;
-  var y = 20;
+  const initialX = 0;
+  const initialY = 20;
+
+  var x = initialX;
+  var y = initialY;
   var dx = 0;
   var dy = 0;
   var shark = document.getElementById("shark");
@@ -32,6 +35,7 @@ $('document').ready(function(){
   }
 
   function draw() {
+    ctx.beginPath();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 	  drawSee();
     drawShark();
@@ -44,6 +48,7 @@ $('document').ready(function(){
     else toReset = false;
     decelerate(toReset);
     decreaseSharkStamina();
+    if (gameOver) drawGameOverScreen();
   }
 
   function decreaseSharkStamina() {
@@ -53,6 +58,28 @@ $('document').ready(function(){
       // GAME OVER!
       gameOver = true;
     }
+  }
+
+  function drawGameOverScreen() {
+    ctx.globalAlpha = 0.4;
+    ctx.fillStyle = "gray"; 
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.globalAlpha = 1.0;
+    ctx.font = '48px serif';
+    ctx.fillStyle = "#dd4444"; 
+    ctx.fillText('GAME OVER', 10, 150);
+    ctx.fillStyle = "white"; 
+    ctx.font = '24px serif';
+    ctx.fillText('Enter f\u00fcr Neustart', 10, 180);
+  }
+
+  function restartGame() {
+    x = initialX;
+    y = initialY;
+    dy = 0;
+    dx = 0;
+    shark_stamina = 1.0;
+    gameOver = false; 
   }
 
   function drawUI() {
@@ -111,8 +138,12 @@ $('document').ready(function(){
     if (!gameOver) {
       if (e.code === "ArrowUp" && dy > -10)        dy -= 1.2;
       else if (e.code === "ArrowDown" && dy < 10) dy += 1.2;
+    }
+    else if (e.code === "Enter") {
+      restartGame();
+    }
     //else if (e.code === "ArrowRight")x += 10;
     //else if (e.code === "ArrowLeft") x -= 10;
-    }
+    
   });
 });
