@@ -6,6 +6,10 @@ $('document').ready(function(){
 
   var x = initialX;
   var y = initialY;
+  var initialx_grennFish=750;
+  var initialy_greenFish=300;
+  var x_grennFish=0;
+  var y_greenFish=0;
   var dx = 0;
   var dy = 0;
   var shark = document.getElementById("shark");
@@ -15,6 +19,7 @@ $('document').ready(function(){
 
   var see = document.getElementById("see");
   var anchar = document.getElementById("anchar");
+  var greenFish=document.getElementById("green_fish");
 
 
   
@@ -33,6 +38,9 @@ $('document').ready(function(){
    function drawAnchar() {
     drawWithParamsCoordsSizeFlipped(anchar, 550, 400, 0.2, true);
   }
+     function drawGreenFish() {
+    drawWithParamsCoordsSizeFlipped(greenFish, 750, 300, 0.2, true);
+  }
 
   function draw() {
     ctx.beginPath();
@@ -40,6 +48,7 @@ $('document').ready(function(){
 	  drawSee();
     drawShark();
     drawAnchar();
+	drawGreenFish();
     drawUI();
     x += dx;
     y += dy;
