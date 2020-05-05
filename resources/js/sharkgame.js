@@ -6,6 +6,10 @@ $('document').ready(function(){
   var dx = 0;
   var dy = 0;
   var shark = document.getElementById("shark");
+  var shark_stamina = 1.0;
+
+  var gameOver = false;
+
   var see = document.getElementById("see");
   var anchar = document.getElementById("anchar");
 
@@ -29,15 +33,39 @@ $('document').ready(function(){
 
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-	drawSee();
+	  drawSee();
     drawShark();
-	drawAnchar();
+    drawAnchar();
+    drawUI();
     x += dx;
     y += dy;
     if (y < 0) {y=0; toReset=true;}
     else if (y > canvas.height-60) {y=canvas.height-60; toReset=true;}
     else toReset = false;
     decelerate(toReset);
+    decreaseSharkStamina();
+  }
+
+  function decreaseSharkStamina() {
+    if (shark_stamina - 0.01 < 0.0) shark_stamina = 0;
+    else shark_stamina -= 0.001;
+    if (shark_stamina === 0) {
+      // GAME OVER!
+      gameOver = true;
+    }
+  }
+
+  function drawUI() {
+    drawStaminaBar();
+  }
+
+  function drawStaminaBar() {
+    ctx.rect(10, canvas.height-20, canvas.width-20, 10);
+    ctx.fillStyle = "lightgreen"; 
+    ctx.fillRect(10, canvas.height-20, (canvas.width-20)*shark_stamina, 10)
+    ctx.strokeStyle = "black"; 
+    ctx.lineWidth = "2"; 
+    ctx.stroke(); 
   }
 
   function decelerate(reset) {
@@ -80,9 +108,11 @@ $('document').ready(function(){
   }
 
   document.addEventListener('keydown', (e) => {
-    if (e.code === "ArrowUp")        dy -= 0.75;
-    else if (e.code === "ArrowDown") dy += 0.75;
+    if (!gameOver) {
+      if (e.code === "ArrowUp" && dy > -10)        dy -= 1.2;
+      else if (e.code === "ArrowDown" && dy < 10) dy += 1.2;
     //else if (e.code === "ArrowRight")x += 10;
     //else if (e.code === "ArrowLeft") x -= 10;
+    }
   });
 });
