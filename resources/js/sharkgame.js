@@ -66,9 +66,9 @@ $('document').ready(function(){
         this.img = document.getElementById("shark");
         this.imgSize = 0.4;
         this.diet = {
-          'greenfish' : 0.3, // wenn hai fish1 iss erlangt er 30% stamina dazu...
-          'bluefish' : 1.0, 
-          'orangefish' : 0.5, 
+          'greenfish' : 0.1, // wenn hai fish1 iss erlangt er 30% stamina dazu...
+          'bluefish' : 0.2, 
+          'orangefish' : 0.1, 
         }
       }
       else if (type === 'whale') {
@@ -127,8 +127,10 @@ $('document').ready(function(){
       if (object.hasOwnProperty('type')) {
         // game objects with type
         if (object.type in this.diet) {
-          object.visible = false;
-          this.increaseStamina(this.diet[object.type]);
+          if(!object.deleted && object.visible) {
+            object.visible = false;
+            this.increaseStamina(this.diet[object.type]);
+          }
         } else {
           this.decreaseStamina(0.3); // depends on object type???? Maybe introduce a damageTable like diet with negative values?
         }
@@ -211,13 +213,13 @@ $('document').ready(function(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 	  drawSea();
-    generateFish();
+    if (!gameOver) generateFish();
     fishes.forEach(f => { f.draw(); });
-    fishes.forEach(f => { detectCollision(shark, f); });
+    if (!gameOver) fishes.forEach(f => { detectCollision(shark, f); });
     
-    generateSeaObjects();
+    if (!gameOver) generateSeaObjects();
     seaObjects.forEach(o => { o.draw(); });
-    seaObjects.forEach(o => { detectCollision(shark, o); });
+    if (!gameOver) seaObjects.forEach(o => { detectCollision(shark, o); });
     
     shark.draw();
     drawUI();
