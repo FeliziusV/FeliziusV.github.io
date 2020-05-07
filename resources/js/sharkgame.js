@@ -1,27 +1,142 @@
+// TODOs: ('-' = todo / '+' = done)
+// - Random Shark at the beginning (and display the name of the shark)
+// - Start Button at the Beginning (also maybe some tutorial for the game)
+// - Collision detection
+// - Eating mechanism
+// - streaks mechanism (multiplier for stamina increase on eating...)
+// 
+
 $('document').ready(function(){
   var canvas = document.getElementById("game");
   var ctx = canvas.getContext("2d");
-  const initialX = 0;
-  const initialY = 20;
+  var seaBorderMargin = 60;
 
-  var x = initialX;
-  var y = initialY;
-  var initialx_grennFish=750;
-  var initialy_greenFish=300;
-  var x_grennFish=0;
-  var y_greenFish=0;
-  var dx = 0;
-  var dy = 0;
-  var shark = document.getElementById("shark");
-  var shark_stamina = 1.0;
+  class sharky {
+    constructor(type) {
+      this.type = type;
+      this.x = 0;
+      this.y = 20;
+      this.dx = 0;
+      this.dy = 0;
+      this.stamina = 1.0;
+      this.visible = true;
+      this.deleted = false;
+      this.imgSize = 1.0;
+      this.imgFlipped = false;
 
+      this.diet = undefined;
+      this.img = undefined;
+      if(type === 'tiger') {
+        this.imgFlipped = true;
+        this.img = document.getElementById("shark");
+        this.imgSize = 0.4;
+        this.diet = {
+          'greenfish' : 0.3, // wenn hai fish1 iss erlangt er 30% stamina dazu...
+          'fishtype2' : 1.0, 
+          'fishtype3' : 0.5, 
+        }
+      }
+      else if (type === 'whale') {
+        this.img = undefined // todo
+        this.imgSize = 0.4;
+        this.diet = {
+          'greenfish' : 0.3, // wenn hai fish1 iss erlangt er 30% stamina dazu...
+          'fishtype2' : 1.0, 
+          'fishtype3' : 0.5, 
+        }
+      }
+    }
+
+    draw() {
+      this.x += this.dx;
+      this.y += this.dy;
+
+      var toReset = false;
+      if (this.y < 0) { this.y=0; toReset=true; }
+      else if (this.y > canvas.height-seaBorderMargin) { this.y=canvas.height-seaBorderMargin; toReset=true; }
+
+      if (this.visible) drawWithParamsCoordsSizeFlipped(this.img, this.x, this.y, this.imgSize, this.imgFlipped);
+
+      this.decelerate(toReset);
+      this.decreaseStamina();
+    }
+
+    decelerate(toReset) {
+      if (toReset === true) this.dy = 0;
+      else this.dy = this.dy - this.dy/50;
+    }
+
+    increaseStamina(value) {
+      if (value !== undefined) {
+        this.stamina += value;
+      }
+    }
+
+    decreaseStamina(value) {
+      if (value === undefined) {
+        if (this.stamina - 0.001 < 0.0) this.stamina = 0;
+        else this.stamina -= 0.001;
+      } else {
+        if (this.stamina - value < 0.0) this.stamina = 0;
+        else this.stamina -= value;
+      }
+
+      if (this.stamina <= 0) {
+        // GAME OVER!
+        gameOver = true;
+      }
+    }
+
+    eat(object) {
+      if (object.hasOwnProperty('type')) {
+        // game objects with type
+        if (object.type in this.diet) {
+          object.visible = false;
+          this.increaseStamina(this.diet[object.type]);
+        } else {
+          this.decreaseStamina(0.3); // depends on object type???? Maybe introduce a damageTable like diet with negative values?
+        }
+      } else {
+        // withoud type -> Gameover
+        this.decreaseStamina(this.stamina);
+      }
+    }
+  }
+
+  class fischy {
+    constructor(type) {
+      this.visible = true;
+      this.deleted = false;
+      this.type = type;
+      this.x = canvas.width;
+      this.y = 80+(Math.random()*canvas.height-seaBorderMargin-80);
+      this.dy = 0;
+      this.dx = -2;
+      this.imgSize = 1.0;
+      this.imgFlipped = false;
+      
+      if(type === 'greenfish') {
+        this.imgFlipped = true;
+        this.imgSize = 0.2;
+        this.img = document.getElementById("green_fish");
+        this.dx = (Math.random()*(-2)) - 1;
+      }
+    }
+    draw() {
+      this.x += this.dx;
+      this.y += this.dy;
+
+      if (this.x < -20) { this.visible=false; this.dx=0; this.dy=0; this.deleted = true; }
+      if (this.visible) drawWithParamsCoordsSizeFlipped(this.img, this.x, this.y, this.imgSize, this.imgFlipped);
+    }
+  }
+
+  var fishes = [];
+  let shark = new sharky('tiger');
   var gameOver = false;
 
   var see = document.getElementById("see");
   var anchar = document.getElementById("anchar");
-  var greenFish=document.getElementById("green_fish");
-
-
   
   //drawing = new Image();
   //drawing.onload = function() {
@@ -29,43 +144,38 @@ $('document').ready(function(){
   //};
   //drawing.src = "../../resources/binary/sharks/great_shark.PNG"; // can also be a remote URL e.g. http://
 
-  function drawShark() {
-    drawWithParamsCoordsSizeFlipped(shark, x, y, 0.4, true);
-  }
    function drawSee() {
     drawWithParamsCoordsSizeFlipped(see, 0, 0, 3, true);
   }
    function drawAnchar() {
     drawWithParamsCoordsSizeFlipped(anchar, 550, 400, 0.2, true);
   }
-     function drawGreenFish() {
-    drawWithParamsCoordsSizeFlipped(greenFish, 750, 300, 0.2, true);
-  }
 
   function draw() {
     ctx.beginPath();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
 	  drawSee();
-    drawShark();
+    shark.draw();
     drawAnchar();
-	drawGreenFish();
+    generateFish();
+    fishes.forEach(f => { f.draw(); });
     drawUI();
-    x += dx;
-    y += dy;
-    if (y < 0) {y=0; toReset=true;}
-    else if (y > canvas.height-60) {y=canvas.height-60; toReset=true;}
-    else toReset = false;
-    decelerate(toReset);
-    decreaseSharkStamina();
+    
+    collectGarbage();
     if (gameOver) drawGameOverScreen();
   }
 
-  function decreaseSharkStamina() {
-    if (shark_stamina - 0.01 < 0.0) shark_stamina = 0;
-    else shark_stamina -= 0.001;
-    if (shark_stamina === 0) {
-      // GAME OVER!
-      gameOver = true;
+  function collectGarbage() {
+    fishes = fishes.filter(fish => {
+      return !fish.deleted;
+    });
+  }
+
+  function generateFish() {
+    var ran = Math.random()*100;
+    if(Math.round(ran) === 50) {
+      fishes.push(new fischy('greenfish'))
     }
   }
 
@@ -83,11 +193,8 @@ $('document').ready(function(){
   }
 
   function restartGame() {
-    x = initialX;
-    y = initialY;
-    dy = 0;
-    dx = 0;
-    shark_stamina = 1.0;
+    shark = new sharky('tiger');
+    fishes = [];
     gameOver = false; 
   }
 
@@ -98,15 +205,10 @@ $('document').ready(function(){
   function drawStaminaBar() {
     ctx.rect(10, canvas.height-20, canvas.width-20, 10);
     ctx.fillStyle = "lightgreen"; 
-    ctx.fillRect(10, canvas.height-20, (canvas.width-20)*shark_stamina, 10)
+    ctx.fillRect(10, canvas.height-20, (canvas.width-20)*shark.stamina, 10)
     ctx.strokeStyle = "black"; 
     ctx.lineWidth = "2"; 
     ctx.stroke(); 
-  }
-
-  function decelerate(reset) {
-    if (reset === true) dy = 0;
-    dy = dy - dy/50;
   }
 
   setInterval(draw, 10);
@@ -145,14 +247,11 @@ $('document').ready(function(){
 
   document.addEventListener('keydown', (e) => {
     if (!gameOver) {
-      if (e.code === "ArrowUp" && dy > -10)        dy -= 1.2;
-      else if (e.code === "ArrowDown" && dy < 10) dy += 1.2;
+      if (e.code === "ArrowUp" && shark.dy > -10)       shark.dy -= 1.2;
+      else if (e.code === "ArrowDown" && shark.dy < 10) shark.dy += 1.2;
     }
     else if (e.code === "Enter") {
       restartGame();
     }
-    //else if (e.code === "ArrowRight")x += 10;
-    //else if (e.code === "ArrowLeft") x -= 10;
-    
   });
 });
