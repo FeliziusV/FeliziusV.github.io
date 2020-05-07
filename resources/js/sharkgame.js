@@ -67,8 +67,8 @@ $('document').ready(function(){
         this.imgSize = 0.4;
         this.diet = {
           'greenfish' : 0.3, // wenn hai fish1 iss erlangt er 30% stamina dazu...
-          'fishtype2' : 1.0, 
-          'fishtype3' : 0.5, 
+          'bluefish' : 1.0, 
+          'orangefish' : 0.5, 
         }
       }
       else if (type === 'whale') {
@@ -103,7 +103,8 @@ $('document').ready(function(){
 
     increaseStamina(value) {
       if (value !== undefined) {
-        this.stamina += value;
+        if (this.stamina += value >= 1.0) this.stamina = 1.0;
+        else this.stamina += value;
       }
     }
 
@@ -211,14 +212,27 @@ $('document').ready(function(){
 
 	  drawSea();
     generateFish();
-    generateSeaObjects();
     fishes.forEach(f => { f.draw(); });
+    fishes.forEach(f => { detectCollision(shark, f); });
+    
+    generateSeaObjects();
     seaObjects.forEach(o => { o.draw(); });
+    seaObjects.forEach(o => { detectCollision(shark, o); });
+    
     shark.draw();
     drawUI();
     
     collectGarbage();
     if (gameOver) drawGameOverScreen();
+  }
+
+  function detectCollision(sharkObj, coliderObj) {
+    if (sharkObj.x < coliderObj.x + coliderObj.img.width*coliderObj.imgSize &&
+      sharkObj.x + sharkObj.img.width*sharkObj.imgSize > coliderObj.x &&
+      sharkObj.y < coliderObj.y + coliderObj.img.height*coliderObj.imgSize &&
+      sharkObj.y + sharkObj.img.height*sharkObj.imgSize > coliderObj.y) {
+       sharkObj.eat(coliderObj);
+   }
   }
 
   function collectGarbage() {
@@ -245,7 +259,7 @@ $('document').ready(function(){
   }
 
   function generateSeaObjects() {
-    var ran = Math.random()*2500;
+    var ran = Math.random()*250;
     if(Math.round(ran) === 100) {
       seaObjects.push(new seaObject('anchor'));
     }
@@ -270,7 +284,7 @@ $('document').ready(function(){
   function restartGame() {
     shark = new sharky('tiger');
     fishes = [];
-    gameOver = false; 
+    gameOver = false;   
   }
 
   function drawUI() {
