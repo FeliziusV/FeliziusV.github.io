@@ -11,6 +11,35 @@ $('document').ready(function(){
   var ctx = canvas.getContext("2d");
   var seaBorderMargin = 60;
 
+  class seaObject {
+    constructor(type) {
+      this.type = type;
+      this.x = canvas.width;
+      this.y = canvas.height-seaBorderMargin*2 + ((Math.random()-0.5)*20);
+      this.dx = -1.2;
+      this.dy = 0;
+      this.visible = true;
+      this.deleted = false;
+      this.imgSize = 1.0;
+      this.imgFlipped = false;
+
+      this.img = undefined;
+      if (type === 'anchor') {
+        this.img = document.getElementById("anchar");
+        this.imgSize = 0.2;
+        this.imgFlipped = true;
+      }
+    }
+
+    draw() {
+      this.x += this.dx;
+      this.y += this.dy;
+
+      if (this.x < -20) { this.visible=false; this.dx=0; this.dy=0; this.deleted = true; }
+      drawWithParamsCoordsSizeFlipped(this.img, this.x, this.y, this.imgSize, this.flipped);
+    }
+  }
+
   class sharky {
     constructor(type) {
       this.type = type;
@@ -132,11 +161,11 @@ $('document').ready(function(){
   }
 
   var fishes = [];
+  var seaObjects = [];
   let shark = new sharky('tiger');
   var gameOver = false;
 
   var see = document.getElementById("see");
-  var anchar = document.getElementById("anchar");
   
   //drawing = new Image();
   //drawing.onload = function() {
@@ -147,19 +176,17 @@ $('document').ready(function(){
    function drawSee() {
     drawWithParamsCoordsSizeFlipped(see, 0, 0, 3, true);
   }
-   function drawAnchar() {
-    drawWithParamsCoordsSizeFlipped(anchar, 550, 400, 0.2, true);
-  }
 
   function draw() {
     ctx.beginPath();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 	  drawSee();
-    shark.draw();
-    drawAnchar();
     generateFish();
+    generateSeaObjects();
     fishes.forEach(f => { f.draw(); });
+    seaObjects.forEach(o => { o.draw(); });
+    shark.draw();
     drawUI();
     
     collectGarbage();
@@ -170,12 +197,22 @@ $('document').ready(function(){
     fishes = fishes.filter(fish => {
       return !fish.deleted;
     });
+    seaObjects = seaObjects.filter(object => {
+      return !object.deleted;
+    });
   }
 
   function generateFish() {
     var ran = Math.random()*100;
     if(Math.round(ran) === 50) {
       fishes.push(new fischy('greenfish'))
+    }
+  }
+
+  function generateSeaObjects() {
+    var ran = Math.random()*5000;
+    if(Math.round(ran) === 2500) {
+      seaObjects.push(new seaObject('anchor'));
     }
   }
 
