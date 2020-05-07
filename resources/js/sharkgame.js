@@ -10,6 +10,7 @@ $('document').ready(function(){
   var canvas = document.getElementById("game");
   var ctx = canvas.getContext("2d");
   var seaBorderMargin = 60;
+  var bgScrollSpeed = 2;
 
   class seaObject {
     constructor(type) {
@@ -179,23 +180,31 @@ $('document').ready(function(){
   let shark = new sharky('tiger');
   var gameOver = false;
 
-  var see = document.getElementById("see");
+  var sea = document.getElementById("see");
+  var seaPtnr = ctx.createPattern(sea, 'repeat'); // Create a pattern with this image, and set it to "repeat".
   
   //drawing = new Image();
   //drawing.onload = function() {
   //  setInterval(draw, 10);
   //};
   //drawing.src = "../../resources/binary/sharks/great_shark.PNG"; // can also be a remote URL e.g. http://
+  var imgWidth = canvas.width; 
 
-   function drawSee() {
-    drawWithParamsCoordsSizeFlipped(see, 0, 0, 3, true);
+  function drawSea() {
+    //ctx.fillStyle = seaPtnr;
+    //ctx.fillRect(0, 0, canvas.width, canvas.height); // context.fillRect(x, y, width, height);
+    //drawWithParamsCoordsSizeFlipped(sea, 0, 0, 3, true);
+    ctx.drawImage(sea, imgWidth, 0);
+    ctx.drawImage(sea, imgWidth - canvas.width, 0);
+    imgWidth -= bgScrollSpeed; 
+    if (imgWidth == 0) imgWidth = canvas.width; 
   }
 
   function draw() {
     ctx.beginPath();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-	  drawSee();
+	  drawSea();
     generateFish();
     generateSeaObjects();
     fishes.forEach(f => { f.draw(); });
@@ -217,7 +226,7 @@ $('document').ready(function(){
   }
 
   function generateFish() {
-    var ran = Math.random()*100;
+    var ran = Math.random()*300;
     if(Math.round(ran) === 50) {
       fishes.push(new fischy('greenfish'))
     }
