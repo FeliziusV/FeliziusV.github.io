@@ -194,10 +194,8 @@ $('document').ready(function(){
 	if(Math.round(ran) === 49) {
       fishes.push(new fischy('bluefish'))
     }
-	if(Math.round(ran) === 49) {
-      fishes.push(new fischy('bluefish'))
-    }
-	if(Math.round(ran) === 49) {
+	
+	if(Math.round(ran) === 48) {
       fishes.push(new fischy('orangefish'))
     }
   }
