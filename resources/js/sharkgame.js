@@ -29,6 +29,11 @@ $('document').ready(function(){
         this.imgSize = 0.2;
         this.imgFlipped = true;
       }
+	   if (type === 'bottle') {
+        this.img = document.getElementById("bottle");
+        this.imgSize = 0.05;
+        this.imgFlipped = true;
+      }
     }
 
     draw() {
@@ -231,9 +236,12 @@ $('document').ready(function(){
   }
 
   function generateSeaObjects() {
-    var ran = Math.random()*5000;
-    if(Math.round(ran) === 2500) {
+    var ran = Math.random()*2500;
+    if(Math.round(ran) === 100) {
       seaObjects.push(new seaObject('anchor'));
+    }
+	 if(Math.round(ran) === 101) {
+      seaObjects.push(new seaObject('bottle'));
     }
   }
 
