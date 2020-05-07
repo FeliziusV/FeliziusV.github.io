@@ -11,6 +11,7 @@ $('document').ready(function(){
   var ctx = canvas.getContext("2d");
   var seaBorderMargin = 60;
   var bgScrollSpeed = 2;
+  var debug = true;
 
   class seaObject {
     constructor(type) {
@@ -103,7 +104,7 @@ $('document').ready(function(){
 
     increaseStamina(value) {
       if (value !== undefined) {
-        if (this.stamina += value >= 1.0) this.stamina = 1.0;
+        if ((this.stamina + value) >= 1.0) this.stamina = 1.0;
         else this.stamina += value;
       }
     }
@@ -234,6 +235,19 @@ $('document').ready(function(){
       sharkObj.y < coliderObj.y + coliderObj.img.height*coliderObj.imgSize &&
       sharkObj.y + sharkObj.img.height*sharkObj.imgSize > coliderObj.y) {
        sharkObj.eat(coliderObj);
+
+
+   }
+   if (debug) {
+    ctx.rect(sharkObj.x, sharkObj.y, sharkObj.img.width*sharkObj.imgSize, sharkObj.img.height*sharkObj.imgSize)
+    ctx.strokeStyle = "red"; 
+    ctx.lineWidth = "2"; 
+    ctx.stroke(); 
+
+    ctx.rect(coliderObj.x, coliderObj.y, coliderObj.img.width*coliderObj.imgSize, coliderObj.img.height*coliderObj.imgSize)
+    ctx.strokeStyle = "green"; 
+    ctx.lineWidth = "2"; 
+    ctx.stroke(); 
    }
   }
 
