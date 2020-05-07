@@ -269,7 +269,7 @@ $('document').ready(function(){
     ctx.stroke(); 
   }
 
-  setInterval(draw, 10);
+  setInterval(draw, 16);
 
   function drawWithParamsCoords(object, x, y) {
     drawWithParamsCoordsSize(object, x, y, 1);
