@@ -150,6 +150,20 @@ $('document').ready(function(){
         this.img = document.getElementById("green_fish");
         this.dx = (Math.random()*(-2)) - 1;
       }
+	  if(type === 'bluefish') {
+        this.imgFlipped = true;
+        this.imgSize = 0.2;
+        this.img = document.getElementById("blue_fish");
+        this.dx = (Math.random()*(-2)) - 1;
+      }
+	  
+	   if(type === 'orangefish') {
+        this.imgFlipped = true;
+        this.imgSize = 0.2;
+        this.img = document.getElementById("orange_fish");
+        this.dx = (Math.random()*(-2)) - 1;
+      }
+	  
     }
     draw() {
       this.x += this.dx;
@@ -206,6 +220,13 @@ $('document').ready(function(){
     var ran = Math.random()*100;
     if(Math.round(ran) === 50) {
       fishes.push(new fischy('greenfish'))
+    }
+	if(Math.round(ran) === 49) {
+      fishes.push(new fischy('bluefish'))
+    }
+	
+	if(Math.round(ran) === 48) {
+      fishes.push(new fischy('orangefish'))
     }
   }
 
