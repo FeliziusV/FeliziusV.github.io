@@ -263,10 +263,10 @@ $('document').ready(function(){
     ctx.globalAlpha = 1.0;
     ctx.font = '48px serif';
     ctx.fillStyle = "#dd4444"; 
-    ctx.fillText('GAME OVER', 10, 150);
+    ctx.fillText('GAME OVER', 250, 200);
     ctx.fillStyle = "white"; 
     ctx.font = '24px serif';
-    ctx.fillText('Enter f\u00fcr Neustart', 10, 180);
+    ctx.fillText('Enter f\u00fcr Neustart', 300, 250);
   }
 
   function restartGame() {
