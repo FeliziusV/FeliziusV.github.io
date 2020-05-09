@@ -11,7 +11,6 @@ $('document').ready(function(){
   var ctx = canvas.getContext("2d");
   var seaBorderMargin = 60;
   var bgScrollSpeed = 2;
-  var debug = true;
 
   class seaObject {
     constructor(type) {
@@ -67,9 +66,9 @@ $('document').ready(function(){
         this.img = document.getElementById("shark");
         this.imgSize = 0.4;
         this.diet = {
-          'greenfish' : 0.1, // wenn hai fish1 iss erlangt er 30% stamina dazu...
-          'bluefish' : 0.2, 
-          'orangefish' : 0.1, 
+          'greenfish' : 0.3, // wenn hai fish1 iss erlangt er 30% stamina dazu...
+          'fishtype2' : 1.0, 
+          'fishtype3' : 0.5, 
         }
       }
       else if (type === 'whale') {
@@ -104,8 +103,7 @@ $('document').ready(function(){
 
     increaseStamina(value) {
       if (value !== undefined) {
-        if ((this.stamina + value) >= 1.0) this.stamina = 1.0;
-        else this.stamina += value;
+        this.stamina += value;
       }
     }
 
@@ -128,10 +126,8 @@ $('document').ready(function(){
       if (object.hasOwnProperty('type')) {
         // game objects with type
         if (object.type in this.diet) {
-          if(!object.deleted && object.visible) {
-            object.visible = false;
-            this.increaseStamina(this.diet[object.type]);
-          }
+          object.visible = false;
+          this.increaseStamina(this.diet[object.type]);
         } else {
           this.decreaseStamina(0.3); // depends on object type???? Maybe introduce a damageTable like diet with negative values?
         }
@@ -190,6 +186,7 @@ $('document').ready(function(){
   var gameOver = false;
 
   var sea = document.getElementById("see");
+ 
   var seaPtnr = ctx.createPattern(sea, 'repeat'); // Create a pattern with this image, and set it to "repeat".
   
   //drawing = new Image();
@@ -199,12 +196,13 @@ $('document').ready(function(){
   //drawing.src = "../../resources/binary/sharks/great_shark.PNG"; // can also be a remote URL e.g. http://
   var imgWidth = canvas.width; 
 
+
   function drawSea() {
     //ctx.fillStyle = seaPtnr;
     //ctx.fillRect(0, 0, canvas.width, canvas.height); // context.fillRect(x, y, width, height);
     //drawWithParamsCoordsSizeFlipped(sea, 0, 0, 3, true);
-    ctx.drawImage(sea, imgWidth, 0);
-    ctx.drawImage(sea, imgWidth - canvas.width, 0);
+    ctx.drawImage(sea, imgWidth, 0,canvas.width,canvas.height);
+    ctx.drawImage(sea, imgWidth - canvas.width, 0,canvas.width,canvas.height);
     imgWidth -= bgScrollSpeed; 
     if (imgWidth == 0) imgWidth = canvas.width; 
   }
@@ -214,41 +212,15 @@ $('document').ready(function(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 	  drawSea();
-    if (!gameOver) generateFish();
+    generateFish();
+    generateSeaObjects();
     fishes.forEach(f => { f.draw(); });
-    if (!gameOver) fishes.forEach(f => { detectCollision(shark, f); });
-    
-    if (!gameOver) generateSeaObjects();
     seaObjects.forEach(o => { o.draw(); });
-    if (!gameOver) seaObjects.forEach(o => { detectCollision(shark, o); });
-    
     shark.draw();
     drawUI();
     
     collectGarbage();
     if (gameOver) drawGameOverScreen();
-  }
-
-  function detectCollision(sharkObj, coliderObj) {
-    if (sharkObj.x < coliderObj.x + coliderObj.img.width*coliderObj.imgSize &&
-      sharkObj.x + sharkObj.img.width*sharkObj.imgSize > coliderObj.x &&
-      sharkObj.y < coliderObj.y + coliderObj.img.height*coliderObj.imgSize &&
-      sharkObj.y + sharkObj.img.height*sharkObj.imgSize > coliderObj.y) {
-       sharkObj.eat(coliderObj);
-
-
-   }
-   if (debug) {
-    ctx.rect(sharkObj.x, sharkObj.y, sharkObj.img.width*sharkObj.imgSize, sharkObj.img.height*sharkObj.imgSize)
-    ctx.strokeStyle = "red"; 
-    ctx.lineWidth = "2"; 
-    ctx.stroke(); 
-
-    ctx.rect(coliderObj.x, coliderObj.y, coliderObj.img.width*coliderObj.imgSize, coliderObj.img.height*coliderObj.imgSize)
-    ctx.strokeStyle = "green"; 
-    ctx.lineWidth = "2"; 
-    ctx.stroke(); 
-   }
   }
 
   function collectGarbage() {
@@ -275,7 +247,7 @@ $('document').ready(function(){
   }
 
   function generateSeaObjects() {
-    var ran = Math.random()*250;
+    var ran = Math.random()*2500;
     if(Math.round(ran) === 100) {
       seaObjects.push(new seaObject('anchor'));
     }
@@ -300,7 +272,7 @@ $('document').ready(function(){
   function restartGame() {
     shark = new sharky('tiger');
     fishes = [];
-    gameOver = false;   
+    gameOver = false; 
   }
 
   function drawUI() {
