@@ -12,6 +12,38 @@ $('document').ready(function(){
   var seaBorderMargin = 60;
   var bgScrollSpeed = 2;
 
+  
+  class human{
+	   constructor(type) {
+      this.type = type;
+      this.x = canvas.width;
+      this.y = canvas.height-seaBorderMargin*2 + ((Math.random()-0.5)*20);
+      this.dx = -1.2;
+      this.dy = 0;
+      this.visible = true;
+      this.deleted = false;
+      this.imgSize = 1.0;
+      this.imgFlipped = false;
+	    if (type === 'diver') {
+        this.img = document.getElementById("diver");
+        this.imgSize = 0.2;
+        this.imgFlipped = true;
+      }
+	    if (type === 'surfer') {
+        this.img = document.getElementById("surfer");
+        this.imgSize = 0.2;
+        this.imgFlipped = true;
+      }
+	   }
+	       draw() {
+      this.x += this.dx;
+      this.y += this.dy;
+
+      if (this.x < -20) { this.visible=false; this.dx=0; this.dy=0; this.deleted = true; }
+      drawWithParamsCoordsSizeFlipped(this.img, this.x, this.y, this.imgSize, this.flipped);
+    }
+  }
+  
   class seaObject {
     constructor(type) {
       this.type = type;
@@ -34,6 +66,20 @@ $('document').ready(function(){
         this.img = document.getElementById("bottle");
         this.imgSize = 0.05;
         this.imgFlipped = true;
+		var ran = Math.random()*360;
+		this.img.style.transform = "rotate("+ran+"deg) !important";
+      }
+	    if (type === 'rock') {
+        this.img = document.getElementById("rock");
+        this.imgSize = 0.2;
+        this.imgFlipped = true;
+		
+      }
+	     if (type === 'treasure') {
+        this.img = document.getElementById("treasure");
+        this.imgSize = 0.2;
+        this.imgFlipped = true;
+		
       }
     }
 
@@ -163,12 +209,67 @@ $('document').ready(function(){
         this.dx = (Math.random()*(-2)) - 1;
       }
 	  
-	   if(type === 'orangefish') {
+	  if(type === 'orangefish') {
         this.imgFlipped = true;
         this.imgSize = 0.2;
         this.img = document.getElementById("orange_fish");
         this.dx = (Math.random()*(-2)) - 1;
       }
+	     if(type === 'dolphin') {
+        this.imgFlipped = false;
+        this.imgSize = 0.2;
+        this.img = document.getElementById("dolphin");
+        this.dx = (Math.random()*(-2)) - 1;
+      }
+	     if(type === 'octopus') {
+        this.imgFlipped = true;
+        this.imgSize = 0.15;
+        this.img = document.getElementById("octopus");
+        this.dx = (Math.random()*(-2)) - 1;
+      }
+	   if(type === 'plankton') {
+        this.imgFlipped = false;
+        this.imgSize = 0.08;
+        this.img = document.getElementById("plankton");
+        this.dx = (Math.random()*(-2)) - 1;
+      }
+	     if(type === 'plankton_blue') {
+        this.imgFlipped = true;
+        this.imgSize = 0.08;
+        this.img = document.getElementById("plankton_blue");
+        this.dx = (Math.random()*(-2)) - 1;
+      }
+	       if(type === 'seahorse_green') {
+        this.imgFlipped = true;
+        this.imgSize = 0.1;
+        this.img = document.getElementById("seahorse_green");
+        this.dx = (Math.random()*(-2)) - 1;
+      }
+	   if(type === 'seahorse_pink') {
+        this.imgFlipped = true;
+        this.imgSize = 0.1;
+        this.img = document.getElementById("seahorse_pink");
+        this.dx = (Math.random()*(-2)) - 1;
+      }
+	    if(type === 'seal') {
+        this.imgFlipped = true;
+        this.imgSize = 0.2;
+        this.img = document.getElementById("seal");
+        this.dx = (Math.random()*(-2)) - 1;
+      }
+	      if(type === 'seaturtle') {
+        this.imgFlipped = false;
+        this.imgSize = 0.1;
+        this.img = document.getElementById("seaturtle");
+        this.dx = (Math.random()*(-2)) - 1;
+      }
+	      if(type === 'starfish_orange') {
+        this.imgFlipped = true;
+        this.imgSize = 0.1;
+        this.img = document.getElementById("starfish_orange");
+        this.dx = (Math.random()*(-2)) - 1;
+      }
+	
 	  
     }
     draw() {
@@ -182,6 +283,7 @@ $('document').ready(function(){
 
   var fishes = [];
   var seaObjects = [];
+  var humans = [];
   let shark = new sharky('tiger');
   var gameOver = false;
 
@@ -216,6 +318,7 @@ $('document').ready(function(){
     generateSeaObjects();
     fishes.forEach(f => { f.draw(); });
     seaObjects.forEach(o => { o.draw(); });
+	humans.forEach(h => { h.draw(); });
     shark.draw();
     drawUI();
     
@@ -233,7 +336,7 @@ $('document').ready(function(){
   }
 
   function generateFish() {
-    var ran = Math.random()*300;
+    var ran = Math.random()*1000;
     if(Math.round(ran) === 50) {
       fishes.push(new fischy('greenfish'))
     }
@@ -244,7 +347,47 @@ $('document').ready(function(){
 	if(Math.round(ran) === 48) {
       fishes.push(new fischy('orangefish'))
     }
+	  
+	if(Math.round(ran) === 51) {
+      fishes.push(new fischy('dolphin'))
+    }
+	if(Math.round(ran) === 52) {
+      fishes.push(new fischy('octopus'))
+    }
+	if(Math.round(ran) === 53) {
+      fishes.push(new fischy('plankton'))
+    }
+	if(Math.round(ran) === 54) {
+      fishes.push(new fischy('plankton_blue'))
+    }
+	if(Math.round(ran) === 55) {
+      fishes.push(new fischy('seahorse_green'))
+    }
+	if(Math.round(ran) === 56) {
+      fishes.push(new fischy('seahorse_pink'))
+    }
+	if(Math.round(ran) === 57) {
+      fishes.push(new fischy('seal'))
+    }
+	if(Math.round(ran) === 58) {
+      fishes.push(new fischy('seaturtle'))
+    }
+	if(Math.round(ran) === 59) {
+      fishes.push(new fischy('starfish_orange'))
+    }
+	
   }
+  
+  function generateHuman(){
+	   var ran = Math.random()*1000;
+    if(Math.round(ran) === 50) {
+      humans.push(new fischy('diver'))
+    }
+	 if(Math.round(ran) === 51) {
+      humans.push(new fischy('surfer'))
+    }
+  }
+	  
 
   function generateSeaObjects() {
     var ran = Math.random()*2500;
@@ -253,6 +396,13 @@ $('document').ready(function(){
     }
 	 if(Math.round(ran) === 101) {
       seaObjects.push(new seaObject('bottle'));
+    }
+	
+	if(Math.round(ran) === 102) {
+      seaObjects.push(new seaObject('rock'));
+    }
+	if(Math.round(ran) === 102) {
+      seaObjects.push(new seaObject('treasure'));
     }
   }
 
