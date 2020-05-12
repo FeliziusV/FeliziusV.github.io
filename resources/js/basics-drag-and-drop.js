@@ -28,6 +28,7 @@ function onDrop(event) {
     dragged.style.opacity = '';
     target.appendChild(dragged);
     dragged.style.draggable = false;
+	$('#infoModal').modal('show')
   }
   target.style.backgroundColor = '';
 }
