@@ -21,14 +21,15 @@ function onDragEnter(event) {
 
 function onDrop(event) {
   const target = event.target;
-  if (target && dragged) {
-    target.style.backgroundColor = '';
+  if (target && dragged && target.children[0].innerHTML === dragged.id) {
     event.preventDefault();
     // Get the id of the target and add the moved element to the target's DOM
     dragged.parentNode.removeChild(dragged);
     dragged.style.opacity = '';
     target.appendChild(dragged);
+    dragged.style.draggable = false;
   }
+  target.style.backgroundColor = '';
 }
 
 function onDragStart(event) {
@@ -45,10 +46,10 @@ function onDragStart(event) {
 function onDragEnd(event) {
   if (event.target && event.target.nodeName === 'IMG') {
       // Reset the transparency
-      event.target.style.opacity = ''; // reset opacity when drag ends 
+      event.target.style.opacity = ''; // reset opacity when drag ends       
       dragged = null;
       // todo condition (is false then show modal)
-
+      
   }
 }
 
