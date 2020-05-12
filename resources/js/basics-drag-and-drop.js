@@ -46,17 +46,19 @@ function onDragEnd(event) {
   if (event.target && event.target.nodeName === 'IMG') {
       // Reset the transparency
       event.target.style.opacity = ''; // reset opacity when drag ends 
-      dragged = null; 
+      dragged = null;
+      // todo condition (is false then show modal)
+
   }
 }
 
 
-const vehicles = document.querySelector('.vehicles');
+const sharks = document.querySelector('.sharks');
 const dropZone = document.querySelectorAll('.drop-zone');
 
 // Adding event listeners
-vehicles.addEventListener('dragstart', onDragStart);
-vehicles.addEventListener('dragend', onDragEnd);
+sharks.addEventListener('dragstart', onDragStart);
+sharks.addEventListener('dragend', onDragEnd);
 dropZone.forEach(d => {d.addEventListener('drop', onDrop);});
 dropZone.forEach(d => {d.addEventListener('dragenter', onDragEnter);});
 dropZone.forEach(d => {d.addEventListener('dragleave', onDragLeave);});
