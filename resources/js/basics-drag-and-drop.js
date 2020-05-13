@@ -29,7 +29,30 @@ function onDrop(event) {
     target.appendChild(dragged);
     dragged.style.draggable = false;
 	$('#infoModal').modal('show')
-  }
+	if(dragged.id=="Weißer Hai"){
+	document.getElementById("sharkimage").src="../../resources/binary/img/White_shark.jpg";
+	}
+	else{
+	document.getElementById("sharkimage").src="../../resources/binary/img/.jpg";
+	}
+
+	document.getElementById("infoModalLongTitle").innerHTML = "Richtig! der "+dragged.id;
+	document.getElementById("infoModalLongTitle").style.color = '#1f904e';
+
+	}
+	else{
+	$('#infoModal').modal('show')
+
+	document.getElementById("infoModalLongTitle").innerHTML = "Flasch! der "+dragged.id;
+	document.getElementById("infoModalLongTitle").style.color = '#ff0000';
+
+	if(dragged.id=="Weißer Hai"){
+	document.getElementById("sharkimage").src="../../resources/binary/img/White_shark.jpg";
+	}
+	else{
+	document.getElementById("sharkimage").src="../../resources/binary/img/.jpg";
+	}
+	}
   target.style.backgroundColor = '';
 }
 
