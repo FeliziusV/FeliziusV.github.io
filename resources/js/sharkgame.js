@@ -12,6 +12,11 @@ $('document').ready(function(){
   var seaBorderMargin = 60;
   var bgScrollSpeed = 2;
   var debug = true;
+  const drawPerMs = 16;
+  const minutesToPlay = 0.1;
+  const framesToPlay = Math.round((minutesToPlay*60*1000)/drawPerMs);
+  var framesPlayed = 0;
+  var win = false;
   
   class human{
 	   constructor(type) {
@@ -155,7 +160,7 @@ $('document').ready(function(){
     }
 
     decreaseStamina(value) {
-      if (value === undefined) {
+      if (value === undefined && !win) {
         if (this.stamina - 0.001 < 0.0) this.stamina = 0;
         else this.stamina -= 0.001;
       } else {
@@ -312,25 +317,32 @@ $('document').ready(function(){
     if (imgWidth == 0) imgWidth = canvas.width; 
   }
 
+  function increaseFramesPlayed () {
+    if (framesPlayed < framesToPlay) framesPlayed++;
+    else win = true;
+  }
+
   function draw() {
+    increaseFramesPlayed();
     ctx.beginPath();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 	  drawSea();
-    if (!gameOver) generateFish();    
+    if (!gameOver && !win) generateFish();
     fishes.forEach(f => { f.draw(); });
-    if (!gameOver) fishes.forEach(f => { detectCollision(shark, f); });
+    if (!gameOver && !win) fishes.forEach(f => { detectCollision(shark, f); });
 
     generateSeaObjects();
     seaObjects.forEach(o => { o.draw(); });
-    if (!gameOver) seaObjects.forEach(o => { detectCollision(shark, o); });
+    if (!gameOver && !win) seaObjects.forEach(o => { detectCollision(shark, o); });
 
 	  humans.forEach(h => { h.draw(); });
     shark.draw();
     drawUI();
     
     collectGarbage();
-    if (gameOver) drawGameOverScreen();
+    if (gameOver && !win) drawGameOverScreen();
+    if (win && !gameOver) drawWinScreen();
   }
 
   function detectCollision(sharkObj, coliderObj) {
@@ -356,11 +368,14 @@ $('document').ready(function(){
   }
 
   function collectGarbage() {
-    fishes = fishes.filter(fish => {
-      return !fish.deleted;
+    fishes = fishes.filter(fishObj => {
+      return !fishObj.deleted;
     });
-    seaObjects = seaObjects.filter(object => {
-      return !object.deleted;
+    seaObjects = seaObjects.filter(seaObj => {
+      return !seaObj.deleted;
+    });
+    humans = humans.filter(humanObj => {
+      return !humanObj.deleted;
     });
   }
 
@@ -448,14 +463,46 @@ $('document').ready(function(){
     ctx.fillText('Enter f\u00fcr Neustart', 300, 250);
   }
 
+  function drawWinScreen() {
+    ctx.globalAlpha = 0.4;
+    ctx.fillStyle = "gray"; 
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.globalAlpha = 1.0;
+    ctx.font = '48px serif';
+    ctx.fillStyle = "#52e590"; 
+    ctx.fillText('YOU WIN!', 270, 200);
+    ctx.fillStyle = "white"; 
+    ctx.font = '24px serif';
+    ctx.fillText('Enter f\u00fcr Neustart', 300, 250);
+  }
+
   function restartGame() {
     shark = new sharky('tiger');
     fishes = [];
     gameOver = false; 
+    win = false;
+    framesPlayed = 0;
+  }
+
+  function getGameTimePercentage() {
+    return framesPlayed/framesToPlay;
   }
 
   function drawUI() {
     drawStaminaBar();
+    drawTimeBar();
+  }
+
+  function drawTimeBar() {
+    ctx.rect(10, 10, canvas.width-50, 10);
+    ctx.fillStyle = "orange"; 
+    ctx.fillRect(10, 10, (canvas.width-50)*getGameTimePercentage(), 10)
+    ctx.strokeStyle = "black"; 
+    ctx.lineWidth = "2"; 
+    ctx.stroke();
+    ctx.fillStyle = "black"; 
+    ctx.font='28px FontAwesome';
+    ctx.fillText('\uf11e',canvas.width-35,25);
   }
 
   function drawStaminaBar() {
@@ -467,7 +514,7 @@ $('document').ready(function(){
     ctx.stroke(); 
   }
 
-  setInterval(draw, 16);
+  setInterval(draw, drawPerMs);
 
   function drawWithParamsCoords(object, x, y) {
     drawWithParamsCoordsSize(object, x, y, 1);
@@ -502,7 +549,7 @@ $('document').ready(function(){
   }
 
   document.addEventListener('keydown', (e) => {
-    if (!gameOver) {
+    if (!gameOver && !win) {
       if (e.code === "ArrowUp" && shark.dy > -10)       shark.dy -= 1.2;
       else if (e.code === "ArrowDown" && shark.dy < 10) shark.dy += 1.2;
     }
