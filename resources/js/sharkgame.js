@@ -11,7 +11,7 @@ $('document').ready(function(){
   var ctx = canvas.getContext("2d");
   var seaBorderMargin = 60;
   var bgScrollSpeed = 2;
-
+  var debug = true;
   
   class human{
 	   constructor(type) {
@@ -113,8 +113,8 @@ $('document').ready(function(){
         this.imgSize = 0.4;
         this.diet = {
           'greenfish' : 0.3, // wenn hai fish1 iss erlangt er 30% stamina dazu...
-          'fishtype2' : 1.0, 
-          'fishtype3' : 0.5, 
+          'bluefish' : 0.2, 
+          'orangefish' : 0.1, 
         }
       }
       else if (type === 'whale') {
@@ -149,7 +149,8 @@ $('document').ready(function(){
 
     increaseStamina(value) {
       if (value !== undefined) {
-        this.stamina += value;
+        if ((this.stamina + value) >= 1.0) this.stamina = 1.0;
+        else this.stamina += value;
       }
     }
 
@@ -172,8 +173,10 @@ $('document').ready(function(){
       if (object.hasOwnProperty('type')) {
         // game objects with type
         if (object.type in this.diet) {
-          object.visible = false;
-          this.increaseStamina(this.diet[object.type]);
+          if(!object.deleted && object.visible) {
+            object.visible = false;
+            this.increaseStamina(this.diet[object.type]);
+          }
         } else {
           this.decreaseStamina(0.3); // depends on object type???? Maybe introduce a damageTable like diet with negative values?
         }
@@ -314,16 +317,42 @@ $('document').ready(function(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 	  drawSea();
-    generateFish();
-    generateSeaObjects();
+    if (!gameOver) generateFish();    
     fishes.forEach(f => { f.draw(); });
+    if (!gameOver) fishes.forEach(f => { detectCollision(shark, f); });
+
+    generateSeaObjects();
     seaObjects.forEach(o => { o.draw(); });
-	humans.forEach(h => { h.draw(); });
+    if (!gameOver) seaObjects.forEach(o => { detectCollision(shark, o); });
+
+	  humans.forEach(h => { h.draw(); });
     shark.draw();
     drawUI();
     
     collectGarbage();
     if (gameOver) drawGameOverScreen();
+  }
+
+  function detectCollision(sharkObj, coliderObj) {
+    if (sharkObj.x < coliderObj.x + coliderObj.img.width*coliderObj.imgSize &&
+      sharkObj.x + sharkObj.img.width*sharkObj.imgSize > coliderObj.x &&
+      sharkObj.y < coliderObj.y + coliderObj.img.height*coliderObj.imgSize &&
+      sharkObj.y + sharkObj.img.height*sharkObj.imgSize > coliderObj.y) {
+       sharkObj.eat(coliderObj);
+
+
+   }
+   if (debug) {
+    ctx.rect(sharkObj.x, sharkObj.y, sharkObj.img.width*sharkObj.imgSize, sharkObj.img.height*sharkObj.imgSize)
+    ctx.strokeStyle = "red"; 
+    ctx.lineWidth = "2"; 
+    ctx.stroke(); 
+
+    ctx.rect(coliderObj.x, coliderObj.y, coliderObj.img.width*coliderObj.imgSize, coliderObj.img.height*coliderObj.imgSize)
+    ctx.strokeStyle = "green"; 
+    ctx.lineWidth = "2"; 
+    ctx.stroke(); 
+   }
   }
 
   function collectGarbage() {
