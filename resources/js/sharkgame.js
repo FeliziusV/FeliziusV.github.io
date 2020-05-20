@@ -12,15 +12,15 @@ $('document').ready(function(){
   var seaBorderMargin = 60;
   var bgScrollSpeed = 2;
   var debug = true;
-  var modal =false;
   const drawPerMs = 16;
-  const minutesToPlay = 0.1;
+  const minutesToPlay = 0.5;
   const framesToPlay = Math.round((minutesToPlay*60*1000)/drawPerMs);
   var framesPlayed = 0;
   var win = false;
+  var gameLoop;
   
   class human{
-	   constructor(type) {
+    constructor(type) {
       this.type = type;
       this.x = canvas.width;
       this.y = canvas.height-seaBorderMargin*2 + ((Math.random()-0.5)*20);
@@ -30,26 +30,24 @@ $('document').ready(function(){
       this.deleted = false;
       this.imgSize = 1.0;
       this.imgFlipped = false;
-	    if (type === 'diver') {
+      if (type === 'diver') {
         this.img = document.getElementById("diver");
         this.imgSize = 0.2;
         this.imgFlipped = true;
       }
-	    if (type === 'surfer') {
+      if (type === 'surfer') {
         this.img = document.getElementById("surfer");
         this.imgSize = 0.2;
         this.imgFlipped = true;
       }
-	   }
-	       draw() {
-	  if(!modal){
+    }
+	  draw() {
       this.x += this.dx;
       this.y += this.dy;
 
       if (this.x < -20) { this.visible=false; this.dx=0; this.dy=0; this.deleted = true; }
       drawWithParamsCoordsSizeFlipped(this.img, this.x, this.y, this.imgSize, this.flipped);
     }
-	}
   }
   
   class seaObject {
@@ -70,12 +68,12 @@ $('document').ready(function(){
         this.imgSize = 0.2;
         this.imgFlipped = true;
       }
-	   if (type === 'bottle') {
+      if (type === 'bottle') {
         this.img = document.getElementById("bottle");
         this.imgSize = 0.05;
         this.imgFlipped = true;
-		var ran = Math.random()*360;
-		this.img.style.transform = "rotate("+ran+"deg) !important";
+        var ran = Math.random()*360;
+        this.img.style.transform = "rotate("+ran+"deg) !important";
       }
 	    if (type === 'rock') {
         this.img = document.getElementById("rock");
@@ -92,15 +90,12 @@ $('document').ready(function(){
     }
 
     draw() {
-	  if(!modal){
-
       this.x += this.dx;
       this.y += this.dy;
 
       if (this.x < -20) { this.visible=false; this.dx=0; this.dy=0; this.deleted = true; }
       drawWithParamsCoordsSizeFlipped(this.img, this.x, this.y, this.imgSize, this.flipped);
-    }
-	}
+	  }
   }
 
   class sharky {
@@ -140,8 +135,6 @@ $('document').ready(function(){
     }
 
     draw() {
-			  if(!modal){
-
       this.x += this.dx;
       this.y += this.dy;
 
@@ -153,7 +146,6 @@ $('document').ready(function(){
 
       this.decelerate(toReset);
       this.decreaseStamina();
-			  }
     }
 
     decelerate(toReset) {
@@ -172,7 +164,7 @@ $('document').ready(function(){
       if (value === undefined && !win) {
         if (this.stamina - 0.001 < 0.0) this.stamina = 0;
         else this.stamina -= 0.001;
-      } else {
+      } else if (!win){
         if (this.stamina - value < 0.0) this.stamina = 0;
         else this.stamina -= value;
       }
@@ -184,17 +176,21 @@ $('document').ready(function(){
     }
 
     eat(object) {
-		$('#infoModal').modal('show')
-		modal=true;
       if (object.hasOwnProperty('type')) {
         // game objects with type
-        if (object.type in this.diet) {
-          if(!object.deleted && object.visible) {
+        if(!object.deleted && object.visible) {
+          if (object.type in this.diet) {
+            // object is in diet of shark -> gain stamina!
             object.visible = false;
             this.increaseStamina(this.diet[object.type]);
+          
+          } else {
+            // object is NOT in diet of shark -> decrease stamina!
+            object.visible = false;
+            this.decreaseStamina(0.2); // depends on object type???? Maybe introduce a damageTable like diet with negative values?
+            $('#infoModal').modal('show');
+            clearInterval(gameLoop);
           }
-        } else {
-          this.decreaseStamina(0.3); // depends on object type???? Maybe introduce a damageTable like diet with negative values?
         }
       } else {
         // withoud type -> Gameover
@@ -221,50 +217,49 @@ $('document').ready(function(){
         this.img = document.getElementById("green_fish");
         this.dx = (Math.random()*(-2)) - 1;
       }
-	  if(type === 'bluefish') {
+	    if(type === 'bluefish') {
         this.imgFlipped = true;
         this.imgSize = 0.2;
         this.img = document.getElementById("blue_fish");
         this.dx = (Math.random()*(-2)) - 1;
       }
-	  
-	  if(type === 'orangefish') {
+	    if(type === 'orangefish') {
         this.imgFlipped = true;
         this.imgSize = 0.2;
         this.img = document.getElementById("orange_fish");
         this.dx = (Math.random()*(-2)) - 1;
       }
-	     if(type === 'dolphin') {
+	    if(type === 'dolphin') {
         this.imgFlipped = false;
         this.imgSize = 0.2;
         this.img = document.getElementById("dolphin");
         this.dx = (Math.random()*(-2)) - 1;
       }
-	     if(type === 'octopus') {
+	    if(type === 'octopus') {
         this.imgFlipped = true;
         this.imgSize = 0.15;
         this.img = document.getElementById("octopus");
         this.dx = (Math.random()*(-2)) - 1;
       }
-	   if(type === 'plankton') {
+	    if(type === 'plankton') {
         this.imgFlipped = false;
         this.imgSize = 0.08;
         this.img = document.getElementById("plankton");
         this.dx = (Math.random()*(-2)) - 1;
       }
-	     if(type === 'plankton_blue') {
+	    if(type === 'plankton_blue') {
         this.imgFlipped = true;
         this.imgSize = 0.08;
         this.img = document.getElementById("plankton_blue");
         this.dx = (Math.random()*(-2)) - 1;
       }
-	       if(type === 'seahorse_green') {
+	    if(type === 'seahorse_green') {
         this.imgFlipped = true;
         this.imgSize = 0.1;
         this.img = document.getElementById("seahorse_green");
         this.dx = (Math.random()*(-2)) - 1;
       }
-	   if(type === 'seahorse_pink') {
+	    if(type === 'seahorse_pink') {
         this.imgFlipped = true;
         this.imgSize = 0.1;
         this.img = document.getElementById("seahorse_pink");
@@ -276,31 +271,26 @@ $('document').ready(function(){
         this.img = document.getElementById("seal");
         this.dx = (Math.random()*(-2)) - 1;
       }
-	      if(type === 'seaturtle') {
+	    if(type === 'seaturtle') {
         this.imgFlipped = false;
         this.imgSize = 0.1;
         this.img = document.getElementById("seaturtle");
         this.dx = (Math.random()*(-2)) - 1;
       }
-	      if(type === 'starfish_orange') {
+	    if(type === 'starfish_orange') {
         this.imgFlipped = true;
         this.imgSize = 0.1;
         this.img = document.getElementById("starfish_orange");
         this.dx = (Math.random()*(-2)) - 1;
       }
-	
-	  
     }
     draw() {
-	  if(!modal){
-
       this.x += this.dx;
       this.y += this.dy;
 
       if (this.x < -20) { this.visible=false; this.dx=0; this.dy=0; this.deleted = true; }
       if (this.visible) drawWithParamsCoordsSizeFlipped(this.img, this.x, this.y, this.imgSize, this.imgFlipped);
     }
-	}
   }
 
   var fishes = [];
@@ -336,14 +326,12 @@ $('document').ready(function(){
     else win = true;
   }
 
-  function draw() {
-	 if(!modal){
-
+  function globalDraw() {
     increaseFramesPlayed();
     ctx.beginPath();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-	  drawSea();
+    drawSea();
     if (!gameOver && !win) generateFish();
     fishes.forEach(f => { f.draw(); });
     if (!gameOver && !win) fishes.forEach(f => { detectCollision(shark, f); });
@@ -352,7 +340,7 @@ $('document').ready(function(){
     seaObjects.forEach(o => { o.draw(); });
     if (!gameOver && !win) seaObjects.forEach(o => { detectCollision(shark, o); });
 
-	  humans.forEach(h => { h.draw(); });
+    humans.forEach(h => { h.draw(); });
     shark.draw();
     drawUI();
     
@@ -360,28 +348,26 @@ $('document').ready(function(){
     if (gameOver && !win) drawGameOverScreen();
     if (win && !gameOver) drawWinScreen();
   }
-  }
 
   function detectCollision(sharkObj, coliderObj) {
     if (sharkObj.x < coliderObj.x + coliderObj.img.width*coliderObj.imgSize &&
       sharkObj.x + sharkObj.img.width*sharkObj.imgSize > coliderObj.x &&
       sharkObj.y < coliderObj.y + coliderObj.img.height*coliderObj.imgSize &&
       sharkObj.y + sharkObj.img.height*sharkObj.imgSize > coliderObj.y) {
-       sharkObj.eat(coliderObj);
+       
+        sharkObj.eat(coliderObj);
+    }
+    if (debug) {
+      ctx.rect(sharkObj.x, sharkObj.y, sharkObj.img.width*sharkObj.imgSize, sharkObj.img.height*sharkObj.imgSize)
+      ctx.strokeStyle = "red"; 
+      ctx.lineWidth = "2"; 
+      ctx.stroke(); 
 
-
-   }
-   if (debug) {
-    ctx.rect(sharkObj.x, sharkObj.y, sharkObj.img.width*sharkObj.imgSize, sharkObj.img.height*sharkObj.imgSize)
-    ctx.strokeStyle = "red"; 
-    ctx.lineWidth = "2"; 
-    ctx.stroke(); 
-
-    ctx.rect(coliderObj.x, coliderObj.y, coliderObj.img.width*coliderObj.imgSize, coliderObj.img.height*coliderObj.imgSize)
-    ctx.strokeStyle = "green"; 
-    ctx.lineWidth = "2"; 
-    ctx.stroke(); 
-   }
+      ctx.rect(coliderObj.x, coliderObj.y, coliderObj.img.width*coliderObj.imgSize, coliderObj.img.height*coliderObj.imgSize)
+      ctx.strokeStyle = "green"; 
+      ctx.lineWidth = "2"; 
+      ctx.stroke(); 
+    }
   }
 
   function collectGarbage() {
@@ -401,50 +387,47 @@ $('document').ready(function(){
     if(Math.round(ran) === 50) {
       fishes.push(new fischy('greenfish'))
     }
-	if(Math.round(ran) === 49) {
+	  if(Math.round(ran) === 49) {
       fishes.push(new fischy('bluefish'))
     }
-	
-	if(Math.round(ran) === 48) {
+	  if(Math.round(ran) === 48) {
       fishes.push(new fischy('orangefish'))
     }
-	  
-	if(Math.round(ran) === 51) {
+	  if(Math.round(ran) === 51) {
       fishes.push(new fischy('dolphin'))
     }
-	if(Math.round(ran) === 52) {
+	  if(Math.round(ran) === 52) {
       fishes.push(new fischy('octopus'))
     }
-	if(Math.round(ran) === 53) {
+	  if(Math.round(ran) === 53) {
       fishes.push(new fischy('plankton'))
     }
-	if(Math.round(ran) === 54) {
+	  if(Math.round(ran) === 54) {
       fishes.push(new fischy('plankton_blue'))
     }
-	if(Math.round(ran) === 55) {
+	  if(Math.round(ran) === 55) {
       fishes.push(new fischy('seahorse_green'))
     }
-	if(Math.round(ran) === 56) {
+	  if(Math.round(ran) === 56) {
       fishes.push(new fischy('seahorse_pink'))
     }
-	if(Math.round(ran) === 57) {
+	  if(Math.round(ran) === 57) {
       fishes.push(new fischy('seal'))
     }
-	if(Math.round(ran) === 58) {
+	  if(Math.round(ran) === 58) {
       fishes.push(new fischy('seaturtle'))
     }
-	if(Math.round(ran) === 59) {
+	  if(Math.round(ran) === 59) {
       fishes.push(new fischy('starfish_orange'))
     }
-	
   }
   
   function generateHuman(){
-	   var ran = Math.random()*1000;
+	  var ran = Math.random()*1000;
     if(Math.round(ran) === 50) {
       humans.push(new fischy('diver'))
     }
-	 if(Math.round(ran) === 51) {
+	  if(Math.round(ran) === 51) {
       humans.push(new fischy('surfer'))
     }
   }
@@ -455,14 +438,13 @@ $('document').ready(function(){
     if(Math.round(ran) === 100) {
       seaObjects.push(new seaObject('anchor'));
     }
-	 if(Math.round(ran) === 101) {
+	  if(Math.round(ran) === 101) {
       seaObjects.push(new seaObject('bottle'));
     }
-	
-	if(Math.round(ran) === 102) {
+	  if(Math.round(ran) === 102) {
       seaObjects.push(new seaObject('rock'));
     }
-	if(Math.round(ran) === 102) {
+	  if(Math.round(ran) === 102) {
       seaObjects.push(new seaObject('treasure'));
     }
   }
@@ -531,7 +513,7 @@ $('document').ready(function(){
     ctx.stroke(); 
   }
 
-  setInterval(draw, drawPerMs);
+  gameLoop = setInterval(globalDraw, drawPerMs);
 
   function drawWithParamsCoords(object, x, y) {
     drawWithParamsCoordsSize(object, x, y, 1);
@@ -566,7 +548,7 @@ $('document').ready(function(){
   }
  
  function continueGame(){
-	 modal=false;
+   gameLoop = setInterval(globalDraw, drawPerMs);
  }
 
   document.addEventListener('keydown', (e) => {
@@ -578,4 +560,5 @@ $('document').ready(function(){
       restartGame();
     }
   });
+  document.getElementById("continue").addEventListener("click", continueGame); 
 });
