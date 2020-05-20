@@ -12,6 +12,7 @@ $('document').ready(function(){
   var seaBorderMargin = 60;
   var bgScrollSpeed = 2;
   var debug = true;
+  var modal =false;
   const drawPerMs = 16;
   const minutesToPlay = 0.1;
   const framesToPlay = Math.round((minutesToPlay*60*1000)/drawPerMs);
@@ -41,12 +42,14 @@ $('document').ready(function(){
       }
 	   }
 	       draw() {
+	  if(!modal){
       this.x += this.dx;
       this.y += this.dy;
 
       if (this.x < -20) { this.visible=false; this.dx=0; this.dy=0; this.deleted = true; }
       drawWithParamsCoordsSizeFlipped(this.img, this.x, this.y, this.imgSize, this.flipped);
     }
+	}
   }
   
   class seaObject {
@@ -89,12 +92,15 @@ $('document').ready(function(){
     }
 
     draw() {
+	  if(!modal){
+
       this.x += this.dx;
       this.y += this.dy;
 
       if (this.x < -20) { this.visible=false; this.dx=0; this.dy=0; this.deleted = true; }
       drawWithParamsCoordsSizeFlipped(this.img, this.x, this.y, this.imgSize, this.flipped);
     }
+	}
   }
 
   class sharky {
@@ -134,6 +140,8 @@ $('document').ready(function(){
     }
 
     draw() {
+			  if(!modal){
+
       this.x += this.dx;
       this.y += this.dy;
 
@@ -145,6 +153,7 @@ $('document').ready(function(){
 
       this.decelerate(toReset);
       this.decreaseStamina();
+			  }
     }
 
     decelerate(toReset) {
@@ -175,6 +184,8 @@ $('document').ready(function(){
     }
 
     eat(object) {
+		$('#infoModal').modal('show')
+		modal=true;
       if (object.hasOwnProperty('type')) {
         // game objects with type
         if (object.type in this.diet) {
@@ -281,12 +292,15 @@ $('document').ready(function(){
 	  
     }
     draw() {
+	  if(!modal){
+
       this.x += this.dx;
       this.y += this.dy;
 
       if (this.x < -20) { this.visible=false; this.dx=0; this.dy=0; this.deleted = true; }
       if (this.visible) drawWithParamsCoordsSizeFlipped(this.img, this.x, this.y, this.imgSize, this.imgFlipped);
     }
+	}
   }
 
   var fishes = [];
@@ -323,6 +337,8 @@ $('document').ready(function(){
   }
 
   function draw() {
+	 if(!modal){
+
     increaseFramesPlayed();
     ctx.beginPath();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -343,6 +359,7 @@ $('document').ready(function(){
     collectGarbage();
     if (gameOver && !win) drawGameOverScreen();
     if (win && !gameOver) drawWinScreen();
+  }
   }
 
   function detectCollision(sharkObj, coliderObj) {
@@ -547,6 +564,10 @@ $('document').ready(function(){
     ctx.drawImage(object, -width/2, -height/2, width, height);
     ctx.restore();
   }
+ 
+ function continueGame(){
+	 modal=false;
+ }
 
   document.addEventListener('keydown', (e) => {
     if (!gameOver && !win) {

@@ -40,7 +40,30 @@
 <img id="treasure" src="../../resources/binary/objects/treasure.svg" alt="treasure">
 <img id="vegetation_spiky" src="../../resources/binary/objects/vegetation_spiky.svg" alt="vegetation_spiky">
 
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#infoModal">
+  Launch demo modal
+</button>
+  <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header" style="border-bottom: 0 none">
+          <h5 class="modal-title" id="infoModalLongTitle">Weißer Hai</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="continueGame();">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+		
+          <img id="sharkimage" src="../../resources/binary/img/White_shark.jpg" style="float:left; margin-right: 10px;" alt="">
+		  <span id="text"> </span>
 
+        </div>
+        <div class="modal-footer" style=" border-top: 0 none">
+          <button id="continue" type="button" class="btn btn-secondary" data-dismiss="modal" style="background-color: #6aa84f" @click="continueGame()">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 <p align="center">
 <canvas id="game" width="800" height="500"
