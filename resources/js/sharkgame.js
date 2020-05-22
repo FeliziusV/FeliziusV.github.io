@@ -32,6 +32,8 @@ $('document').ready(function(){
       this.imgFlipped = false;
 	  this.tex="Haie greifen Menschen nur dann, wenn der Mensch ihm Angst macht, also als Verteidigung. Im Jahr 2019, wurden insgesamt nur 64 Menschen von Haien angegriffen. Die Chancen von einem Hai attackiert zu werden liegen bei 11.5 Millionen zu eins.";
       if (type === 'diver') {
+		this.y = Math.floor(Math.random() * (500 - 60 + 1) + 60);
+
         this.img = document.getElementById("diver");
         this.imgSize = 0.2;
         this.imgFlipped = true;
@@ -39,6 +41,7 @@ $('document').ready(function(){
 		this.src="../../resources/binary/objects/diver.svg";
       }
       if (type === 'surfer') {
+		this.y = Math.floor(Math.random() * (50 - 45 + 1) + 45);
         this.img = document.getElementById("surfer");
         this.imgSize = 0.2;
         this.imgFlipped = true;
@@ -59,7 +62,8 @@ $('document').ready(function(){
     constructor(type) {
       this.type = type;
       this.x = canvas.width;
-      this.y = canvas.height-seaBorderMargin*2 + ((Math.random()-0.5)*20);
+      this.y =Math.floor(Math.random() * (450 - 70 + 1) + 70);
+
       this.dx = -1.2;
       this.dy = 0;
       this.visible = true;
@@ -227,7 +231,7 @@ $('document').ready(function(){
       this.deleted = false;
       this.type = type;
       this.x = canvas.width;
-      this.y = 80+(Math.random()*canvas.height-seaBorderMargin-80);
+      this.y =Math.floor(Math.random() * (450 - 70 + 1) + 70);
       this.dy = 0;
       this.dx = -2;
       this.imgSize = 1.0;
@@ -349,6 +353,8 @@ $('document').ready(function(){
   }
 
   function globalDraw() {
+	 
+
     if(!gameOver && !win)increaseFramesPlayed();
     ctx.beginPath();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -373,6 +379,7 @@ $('document').ready(function(){
     collectGarbage();
     if (gameOver && !win) drawGameOverScreen();
     if (win && !gameOver) drawWinScreen();
+
   }
 
   function detectCollision(sharkObj, coliderObj) {
@@ -503,6 +510,7 @@ $('document').ready(function(){
     ctx.fillStyle = "white"; 
     ctx.font = '24px serif';
     ctx.fillText('Enter f\u00fcr Neustart', 300, 250);
+
   }
 
   function restartGame() {
