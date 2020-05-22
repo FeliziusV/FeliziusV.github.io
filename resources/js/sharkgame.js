@@ -199,7 +199,7 @@ $('document').ready(function(){
 			document.getElementById("continue").style="background-color: grey"
 			
             clearInterval(gameLoop);
-			wait(5000);
+			sleep(5000);
 			document.getElementById("exit").disabled = false;
 
 			document.getElementById("continue").disabled = false;
@@ -218,7 +218,7 @@ $('document').ready(function(){
 			document.getElementById("continue").style="background-color: grey"
 			
             clearInterval(gameLoop);
-			wait(5000);
+			sleep(5000);
 			document.getElementById("exit").disabled = false;
 
 			document.getElementById("continue").disabled = false;
@@ -236,7 +236,7 @@ $('document').ready(function(){
 			document.getElementById("continue").style="background-color: grey"
 			
             clearInterval(gameLoop);
-			wait(5000);
+			sleep(5000);
 			document.getElementById("exit").disabled = false;
 
 			document.getElementById("continue").disabled = false;
@@ -380,7 +380,7 @@ $('document').ready(function(){
   }
 
   function globalDraw() {
-    increaseFramesPlayed();
+    if(!gameOver && !win)increaseFramesPlayed();
     ctx.beginPath();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -389,11 +389,14 @@ $('document').ready(function(){
     fishes.forEach(f => { f.draw(); });
     if (!gameOver && !win) fishes.forEach(f => { detectCollision(shark, f); });
 
-    generateSeaObjects();
+    if (!gameOver && !win) generateSeaObjects();
     seaObjects.forEach(o => { o.draw(); });
     if (!gameOver && !win) seaObjects.forEach(o => { detectCollision(shark, o); });
 
+    if (!gameOver && !win) generateHuman();
     humans.forEach(h => { h.draw(); });
+    if (!gameOver && !win) humans.forEach(h => { detectCollision(shark, h); });
+
     shark.draw();
     drawUI();
     
@@ -476,12 +479,12 @@ $('document').ready(function(){
   }
   
   function generateHuman(){
-	  var ran = Math.random()*1000;
+	  var ran = Math.random()*500;
     if(Math.round(ran) === 50) {
-      humans.push(new fischy('diver'))
+      humans.push(new human('diver'))
     }
 	  if(Math.round(ran) === 51) {
-      humans.push(new fischy('surfer'))
+      humans.push(new human('surfer'))
     }
   }
 	  
