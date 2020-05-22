@@ -196,27 +196,22 @@ $('document').ready(function(){
             // object is NOT in diet of shark -> decrease stamina!
             object.visible = false;
             this.decreaseStamina(0.2); // depends on object type???? Maybe introduce a damageTable like diet with negative values?
-			if(object.hasOwnProperty("h1")){
-				
-            $('#infoModal').modal('show');
-			document.getElementById("sharkimage").src=object.src;
-			document.getElementById("text").textContent=object.tex;
-			document.getElementById("infoModalLongTitle").innerHTML =object.h1;
-			document.getElementById("continue").disabled = true;
-			document.getElementById("exit").disabled = true;
-
-			document.getElementById("continue").style="background-color: grey"
+			      if(object.hasOwnProperty("h1")){
+				      $('#infoModal').modal('show');
+			        document.getElementById("sharkimage").src=object.src;
+			        document.getElementById("text").textContent=object.tex;
+			        document.getElementById("infoModalLongTitle").innerHTML =object.h1;
+			        document.getElementById("continue").disabled = true;
+        			document.getElementById("exit").disabled = true;
+			        document.getElementById("continue").style="background-color: grey"
 			
-            clearInterval(gameLoop);
-            setTimeout(function () {
-            	document.getElementById("exit").disabled = false;
-			        document.getElementById("continue").disabled = false;
-			        document.getElementById("continue").style="background-color: #6aa84f";
-            });
-			}
-			
-			
-			
+              clearInterval(gameLoop);
+              setTimeout(function () {
+            	  document.getElementById("exit").disabled = false;
+			          document.getElementById("continue").disabled = false;
+			          document.getElementById("continue").style="background-color: #6aa84f";
+              }, 5000);
+			      }	
           }
         }
       } else {
