@@ -382,8 +382,9 @@ $('document').ready(function(){
     if(!gameOver && !win)increaseFramesPlayed();
     ctx.beginPath();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+    
     drawSea();
+    //generateObjects();
     if (!gameOver && !win) generateFish();
     fishes.forEach(f => { f.draw(); });
     if (!gameOver && !win) fishes.forEach(f => { detectCollision(shark, f); });
@@ -435,6 +436,10 @@ $('document').ready(function(){
     humans = humans.filter(humanObj => {
       return !humanObj.deleted;
     });
+  }
+
+  function generateObjects() {
+    
   }
 
   function generateFish() {
