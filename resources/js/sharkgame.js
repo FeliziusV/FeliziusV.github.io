@@ -30,15 +30,20 @@ $('document').ready(function(){
       this.deleted = false;
       this.imgSize = 1.0;
       this.imgFlipped = false;
+	  this.tex="Haie greifen Menschen nur dann, wenn der Mensch ihm Angst macht, also als Verteidigung. Im Jahr 2019, wurden insgesamt nur 64 Menschen von Haien angegriffen. Die Chancen von einem Hai attackiert zu werden liegen bei 11.5 Millionen zu eins.";
       if (type === 'diver') {
         this.img = document.getElementById("diver");
         this.imgSize = 0.2;
         this.imgFlipped = true;
+		this.h1="Taucher";
+		this.src="../../resources/binary/objects/diver.svg";
       }
       if (type === 'surfer') {
         this.img = document.getElementById("surfer");
         this.imgSize = 0.2;
         this.imgFlipped = true;
+		this.h1="Taucher";
+		this.src="../../resources/binary/objects/surfer.svg";
       }
     }
 	  draw() {
@@ -74,7 +79,10 @@ $('document').ready(function(){
         this.imgFlipped = true;
         var ran = Math.random()*360;
         this.img.style.transform = "rotate("+ran+"deg) !important";
-      }
+		this.h1="bottle";
+		this.tex="Jedes Jahr landen ungefähr 8 Millionen Tonnen Plastik im Meer. Momentan gibt es bereits mehr als 140 Millionen Tonnen Plastikmüll in den Meeren und Ozeanen. Dieser Plastik ist gefährlich für die Haie und andere Meeresbewohner und verursacht zu vielen Krankheiten für diese Tiere.";
+		this.src="../../resources/binary/objects/bottle.svg";
+	  }
 	    if (type === 'rock') {
         this.img = document.getElementById("rock");
         this.imgSize = 0.2;
@@ -188,11 +196,12 @@ $('document').ready(function(){
             // object is NOT in diet of shark -> decrease stamina!
             object.visible = false;
             this.decreaseStamina(0.2); // depends on object type???? Maybe introduce a damageTable like diet with negative values?
-			if(object.type=="bottle"){
+			if(object.hasOwnProperty("h1")){
 				
             $('#infoModal').modal('show');
-			document.getElementById("sharkimage").src="../../resources/binary/objects/bottle.svg";
-			document.getElementById("text").textContent="Jedes Jahr landen ungefähr 8 Millionen Tonnen Plastik im Meer. Momentan gibt es bereits mehr als 140 Millionen Tonnen Plastikmüll in den Meeren und Ozeanen. Dieser Plastik ist gefährlich für die Haie und andere Meeresbewohner und verursacht zu vielen Krankheiten für diese Tiere.";
+			document.getElementById("sharkimage").src=object.src;
+			document.getElementById("text").textContent=object.tex;
+			document.getElementById("infoModalLongTitle").innerHTML =object.h1;
 			document.getElementById("continue").disabled = true;
 			document.getElementById("exit").disabled = true;
 
@@ -205,42 +214,8 @@ $('document').ready(function(){
 			        document.getElementById("continue").style="background-color: #6aa84f";
             });
 			}
-			if(object.type=="surfer"){
-				
-            $('#infoModal').modal('show');
-			document.getElementById("sharkimage").src="../../resources/binary/objects/surfer.svg";
-			document.getElementById("text").textContent="Haie greifen Menschen nur dann, wenn der Mensch ihm Angst macht, also als Verteidigung. Im Jahr 2019, wurden insgesamt nur 64 Menschen von Haien angegriffen. Die Chancen von einem Hai attackiert zu werden liegen bei 11.5 Millionen zu eins.";
-
-            document.getElementById("continue").disabled = true;
-			document.getElementById("exit").disabled = true;
-
-			document.getElementById("continue").style="background-color: grey"
 			
-            clearInterval(gameLoop);
-            setTimeout(function () {
-            	document.getElementById("exit").disabled = false;
-			        document.getElementById("continue").disabled = false;
-			        document.getElementById("continue").style="background-color: #6aa84f";
-            }, 5000);
-			}
-			if(object.type=="diver"){
-				
-            $('#infoModal').modal('show');
-			document.getElementById("sharkimage").src="../../resources/binary/objects/diver.svg";
-			document.getElementById("text").textContent="Haie greifen Menschen nur dann, wenn der Mensch ihm Angst macht, also als Verteidigung. Im Jahr 2019, wurden insgesamt nur 64 Menschen von Haien angegriffen. Die Chancen von einem Hai attackiert zu werden liegen bei 11.5 Millionen zu eins.";
-
-            document.getElementById("continue").disabled = true;
-			document.getElementById("exit").disabled = true;
-
-			document.getElementById("continue").style="background-color: grey"
 			
-      clearInterval(gameLoop);
-      setTimeout(function () {
-        document.getElementById("exit").disabled = false;
-        document.getElementById("continue").disabled = false;
-        document.getElementById("continue").style="background-color: #6aa84f";
-      }, 5000);
-			}
 			
           }
         }
