@@ -1,4 +1,5 @@
-let dragged; 
+let dragged;
+counter=0;
 
 function onDragOver(event) {
   // Prevent default to allow drop
@@ -56,8 +57,13 @@ function onDrop(event) {
 
 	document.getElementById("infoModalLongTitle").innerHTML = "Richtig! der "+dragged.id;
 	document.getElementById("infoModalLongTitle").style.color = '#1f904e';
+	counter=counter+1;
+	if(counter==5){
+		
+	 document.getElementById("gewonnenButton").style="display:initial; font-family: 'Comfortaa';";
 
 	}
+  }
 	else{
 	$('#infoModal').modal('show')
 

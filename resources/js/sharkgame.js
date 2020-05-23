@@ -541,7 +541,7 @@ $('document').ready(function(){
     ctx.globalAlpha = 1.0;
     ctx.font = '48px serif';
     ctx.fillStyle = "#52e590"; 
-    ctx.fillText('YOU WIN!', 270, 200);
+    ctx.fillText('GEWONNEN!', 270, 200);
     ctx.fillStyle = "white"; 
     ctx.font = '24px serif';
     ctx.fillText('Enter f\u00fcr Neustart', 300, 250);
