@@ -20,6 +20,8 @@ $('document').ready(function(){
   var gameLoop;
   
   class human{
+    static NAMES = ['diver', 'surfer'];
+
     constructor(type) {
       this.type = type;
       this.x = canvas.width;
@@ -59,6 +61,8 @@ $('document').ready(function(){
   }
   
   class seaObject {
+    static NAMES = ['anchor', 'bottle', 'rock', 'treasure'];
+  
     constructor(type) {
       this.type = type;
       this.x = canvas.width;
@@ -73,13 +77,14 @@ $('document').ready(function(){
 
       this.img = undefined;
       if (type === 'anchor') {
+        this.y = canvas.height-seaBorderMargin;
         this.img = document.getElementById("anchar");
-        this.imgSize = 0.2;
+        this.imgSize = 0.3;
         this.imgFlipped = true;
       }
       if (type === 'bottle') {
         this.img = document.getElementById("bottle");
-        this.imgSize = 0.05;
+        this.imgSize = 0.15;
         this.imgFlipped = true;
         var ran = Math.random()*360;
         this.img.style.transform = "rotate("+ran+"deg) !important";
@@ -88,12 +93,14 @@ $('document').ready(function(){
 		this.src="../../resources/binary/objects/bottle.svg";
 	  }
 	    if (type === 'rock') {
+        this.y = canvas.height - seaBorderMargin;
         this.img = document.getElementById("rock");
-        this.imgSize = 0.2;
+        this.imgSize = 0.5;
         this.imgFlipped = true;
 		
       }
 	     if (type === 'treasure') {
+        this.y = canvas.height - seaBorderMargin;
         this.img = document.getElementById("treasure");
         this.imgSize = 0.2;
         this.imgFlipped = true;
@@ -111,6 +118,8 @@ $('document').ready(function(){
   }
 
   class sharky {
+    static NAMES = ['tiger', 'whale'];
+
     constructor(type) {
       this.type = type;
       this.x = 0;
@@ -130,10 +139,27 @@ $('document').ready(function(){
         this.img = document.getElementById("shark");
         this.imgSize = 0.4;
         this.diet = {
-          'greenfish' : 0.3, // wenn hai fish1 iss erlangt er 30% stamina dazu...
+          'greenfish' : 0.2, // wenn hai fish1 iss erlangt er 30% stamina dazu...
           'bluefish' : 0.2, 
-          'orangefish' : 0.1, 
-        }
+          'orangefish' : 0.1,
+          'dolphin' : 0.6,
+          'seaturtle' : 0.4,
+          'seal' : 0.65
+        };
+        this.damageTable = {
+          'diver' : 1.0,
+          'surfer' : 1.0,
+          'octopus' : 0.2,
+          'plankton' : 0.05,
+          'plankton_blue' : 0.05,
+          'seahorse_green' : 0.05,
+          'seahorse_pink' : 0.05,
+          'starfish_orange' : 0.05,
+          'anchor' : 0.65,
+          'bottle' : 0.35,
+          'rock' : 1.0,
+          'treasure' : 0.35
+        };
       }
       else if (type === 'whale') {
         this.img = undefined // todo
@@ -195,11 +221,10 @@ $('document').ready(function(){
             // object is in diet of shark -> gain stamina!
             object.visible = false;
             this.increaseStamina(this.diet[object.type]);
-          
-          } else {
+          } else if (object.type in this.damageTable) {
             // object is NOT in diet of shark -> decrease stamina!
             object.visible = false;
-            this.decreaseStamina(0.2); // depends on object type???? Maybe introduce a damageTable like diet with negative values?
+            this.decreaseStamina(this.damageTable[object.type]); 
 			      if(object.hasOwnProperty("h1")){
 				      $('#infoModal').modal('show');
 			        document.getElementById("sharkimage").src=object.src;
@@ -226,6 +251,10 @@ $('document').ready(function(){
   }
 
   class fischy {
+    static NAMES = ['greenfish', 'bluefish', 'orangefish', 'dolphin', 'octopus', 
+                    'plankton', 'plankton_blue', 'seahorse_green', 'seahorse_pink', 'seal', 
+                    'seaturtle', 'starfish_orange'];
+
     constructor(type) {
       this.visible = true;
       this.deleted = false;
@@ -320,6 +349,7 @@ $('document').ready(function(){
   }
 
   var fishes = [];
+  var otherFishes = [];
   var seaObjects = [];
   var humans = [];
   let shark = new sharky('tiger');
@@ -338,9 +368,6 @@ $('document').ready(function(){
 
 
   function drawSea() {
-    //ctx.fillStyle = seaPtnr;
-    //ctx.fillRect(0, 0, canvas.width, canvas.height); // context.fillRect(x, y, width, height);
-    //drawWithParamsCoordsSizeFlipped(sea, 0, 0, 3, true);
     ctx.drawImage(sea, imgWidth, 0,canvas.width,canvas.height);
     ctx.drawImage(sea, imgWidth - canvas.width, 0,canvas.width,canvas.height);
     imgWidth -= bgScrollSpeed; 
@@ -361,15 +388,16 @@ $('document').ready(function(){
     
     drawSea();
     if (!gameOver && !win) generateObjects();
-    //if (!gameOver && !win) generateFish();
+
     fishes.forEach(f => { f.draw(); });
     if (!gameOver && !win) fishes.forEach(f => { detectCollision(shark, f); });
 
-    //if (!gameOver && !win) generateSeaObjects();
+    otherFishes.forEach(f => { f.draw(); });
+    if (!gameOver && !win) otherFishes.forEach(f => { detectCollision(shark, f); });
+
     seaObjects.forEach(o => { o.draw(); });
     if (!gameOver && !win) seaObjects.forEach(o => { detectCollision(shark, o); });
 
-    //if (!gameOver && !win) generateHuman();
     humans.forEach(h => { h.draw(); });
     if (!gameOver && !win) humans.forEach(h => { detectCollision(shark, h); });
 
@@ -407,6 +435,9 @@ $('document').ready(function(){
     fishes = fishes.filter(fishObj => {
       return !fishObj.deleted;
     });
+    otherFishes = otherFishes.filter(otherFishObj => {
+      return !otherFishObj.deleted;
+    });
     seaObjects = seaObjects.filter(seaObj => {
       return !seaObj.deleted;
     });
@@ -416,8 +447,14 @@ $('document').ready(function(){
   }
 
   function generateObjects() {
-    var maxfishesrendered = 8;
-    var maxModuloValue = 20;
+    const maxfishesrendered = 8;
+    const seastuffratio = 0.2;
+    const otherfishesratio = 0.5;
+    const humansratio = 0.15;
+    const maxseastuffrendered = Math.ceil(maxfishesrendered*seastuffratio);
+    const maxhumansrendered = Math.ceil(maxfishesrendered*humansratio);
+    const maxotherfishesrendered = Math.ceil(maxfishesrendered*otherfishesratio);
+    const maxModuloValue = 20;
 
     var overalldietprobability = 0.25;
     var sharkstaminaprobability = (1.0 - shark.stamina);
@@ -433,6 +470,31 @@ $('document').ready(function(){
 
     if (spawningfishprobability >= 1/maxModuloValue && (Math.floor(Math.random() * 101) % modulooperator) == 0) {
       fishes.push(new fischy(diettospawnkey));
+    }
+
+    var otherFishesNames = fischy.NAMES.filter((name) => !(Object.keys(shark.diet)).includes( name));
+    maxotherfishesprobability = (1.0-(otherFishesNames.length/maxotherfishesrendered))*0.8;
+    otherfishtodraw = otherFishesNames[(framesPlayed % otherFishesNames.length)]
+    modulooperator = getModuloOperatorByProbability(maxotherfishesprobability, maxModuloValue);
+    if (maxotherfishesprobability >= 1/maxModuloValue && (Math.floor(Math.random() * 101) % modulooperator) == 0) {
+      otherFishes.push(new fischy(otherfishtodraw));
+    }
+
+    var seaObjectNames = seaObject.NAMES;
+    seastuffrenderprobability = (1.0-(seaObjects.length/maxseastuffrendered))*0.3*0.8;
+    stufftorender = seaObjectNames[(framesPlayed % seaObjectNames.length)]
+    if(stufftorender === 'treasure') seastuffrenderprobability*0.33;
+    modulooperator = getModuloOperatorByProbability(seastuffrenderprobability, maxModuloValue*2);
+    if (seastuffrenderprobability >= 1/maxModuloValue && (Math.floor(Math.random() * 101) % modulooperator) == 0) {
+      seaObjects.push(new seaObject(stufftorender));
+    }
+
+    var humanNames = human.NAMES;
+    humanrenderprobability = (1.0-(humans.length/maxhumansrendered))*0.2*0.8;
+    humantorender = humanNames[(framesPlayed % humanNames.length)]
+    modulooperator = getModuloOperatorByProbability(humanrenderprobability, maxModuloValue*2);
+    if (humanrenderprobability >= 1/maxModuloValue && (Math.floor(Math.random() * 101) % modulooperator) == 0) {
+      humans.push(new human(humantorender));
     }
   }
 
@@ -551,6 +613,9 @@ $('document').ready(function(){
   function restartGame() {
     shark = new sharky('tiger');
     fishes = [];
+    otherFishes = [];
+    seaObjects = [];
+    humans = [];
     gameOver = false; 
     win = false;
     framesPlayed = 0;
