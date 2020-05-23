@@ -13,7 +13,7 @@ $('document').ready(function(){
   var bgScrollSpeed = 2;
   var debug = true;
   const drawPerMs = 16;
-  const minutesToPlay = 0.5;
+  const minutesToPlay = 1;
   const framesToPlay = Math.round((minutesToPlay*60*1000)/drawPerMs);
   var framesPlayed = 0;
   var win = false;
@@ -354,16 +354,16 @@ $('document').ready(function(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     drawSea();
-    //generateObjects();
-    if (!gameOver && !win) generateFish();
+    if (!gameOver && !win) generateObjects();
+    //if (!gameOver && !win) generateFish();
     fishes.forEach(f => { f.draw(); });
     if (!gameOver && !win) fishes.forEach(f => { detectCollision(shark, f); });
 
-    if (!gameOver && !win) generateSeaObjects();
+    //if (!gameOver && !win) generateSeaObjects();
     seaObjects.forEach(o => { o.draw(); });
     if (!gameOver && !win) seaObjects.forEach(o => { detectCollision(shark, o); });
 
-    if (!gameOver && !win) generateHuman();
+    //if (!gameOver && !win) generateHuman();
     humans.forEach(h => { h.draw(); });
     if (!gameOver && !win) humans.forEach(h => { detectCollision(shark, h); });
 
@@ -409,7 +409,42 @@ $('document').ready(function(){
   }
 
   function generateObjects() {
+    var maxfishesrendered = 8;
+    var maxModuloValue = 20;
+
+    var overalldietprobability = 0.25;
+    var sharkstaminaprobability = (1.0 - shark.stamina);
+    var fishesprobability = 1.0-(fishes.length/maxfishesrendered);
+
+    var dietkeys = Object.keys(shark.diet);
+    var diettospawnkey = dietkeys[(framesPlayed % dietkeys.length)]; 
+    var diettospawnprobability = 1.0-shark.diet[diettospawnkey];
     
+    spawningfishprobability = overalldietprobability*sharkstaminaprobability*diettospawnprobability*fishesprobability;
+    var modulooperator = getModuloOperatorByProbability(spawningfishprobability, maxModuloValue);
+    // if (debug) console.log('prob:' + spawningfishprobability*100);
+
+    if (spawningfishprobability >= 1/maxModuloValue && (Math.floor(Math.random() * 101) % modulooperator) == 0) {
+      fishes.push(new fischy(diettospawnkey));
+    }
+  }
+
+  function getModuloOperatorByProbability(probability, maxModuloValue) {
+    var modulooperator = 1;
+    for (var i=1; probability <= 1/i && i <= maxModuloValue; i++) {
+      modulooperator = i;
+    }
+    return modulooperator;
+
+    // if (probability <= 0.5) modulooperator = 2;
+    // if (probability <= 0.3333) modulooperator = 3;
+    // if (probability <= 0.25) modulooperator = 4;
+    // if (probability <= 0.2) modulooperator = 5;
+    // if (probability <= 0.1667) modulooperator = 6;
+    // if (probability <= 0.1429) modulooperator = 7;
+    // if (probability <= 0.125) modulooperator = 8;
+    // if (probability <= 0.1111) modulooperator = 9;
+    // if (probability <= 0.1) modulooperator = 10;
   }
 
   function generateFish() {
