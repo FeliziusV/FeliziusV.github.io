@@ -224,8 +224,8 @@ $('document').ready(function(){
 
     decreaseStamina(value) {
       if (value === undefined && !win) {
-        if (this.stamina - 0.0015 < 0.0) this.stamina = 0;
-        else this.stamina -= 0.0015;
+        if (this.stamina - this.idleStaminaDecreaseValue < 0.0) this.stamina = 0;
+        else this.stamina -= this.idleStaminaDecreaseValue;
       } else if (!win){
         if (this.stamina - value < 0.0) this.stamina = 0;
         else this.stamina -= value;
