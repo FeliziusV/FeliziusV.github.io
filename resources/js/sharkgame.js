@@ -11,7 +11,7 @@ $('document').ready(function(){
   var ctx = canvas.getContext("2d");
   var seaBorderMargin = 60;
   var bgScrollSpeed = 2;
-  var debug = true;
+  var debug = false;
   const drawPerMs = 16;
   const minutesToPlay = 1;
   const framesToPlay = Math.round((minutesToPlay*60*1000)/drawPerMs);
@@ -32,31 +32,31 @@ $('document').ready(function(){
       this.deleted = false;
       this.imgSize = 1.0;
       this.imgFlipped = false;
-	  this.tex="Haie greifen Menschen nur dann, wenn der Mensch ihm Angst macht, also als Verteidigung. Im Jahr 2019, wurden insgesamt nur 64 Menschen von Haien angegriffen. Die Chancen von einem Hai attackiert zu werden liegen bei 11.5 Millionen zu eins.";
+	    this.tex="Haie greifen Menschen nur dann, wenn der Mensch ihm Angst macht, also als Verteidigung. Im Jahr 2019, wurden insgesamt nur 64 Menschen von Haien angegriffen. Die Chancen von einem Hai attackiert zu werden liegen bei 11.5 Millionen zu eins.";
       if (type === 'diver') {
-		this.y = Math.floor(Math.random() * (500 - 60 + 1) + 60);
-
+		    this.y = Math.floor(Math.random() * (500 - 60 + 1) + 60);
         this.img = document.getElementById("diver");
-        this.imgSize = 0.2;
+        this.imgSize = 0.3;
         this.imgFlipped = true;
-		this.h1="Taucher";
-		this.src="../../resources/binary/objects/diver.svg";
+		    this.h1="Taucher";
+		    this.src="../../resources/binary/objects/diver.svg";
       }
       if (type === 'surfer') {
-		this.y = Math.floor(Math.random() * (50 - 45 + 1) + 45);
+		    this.y = Math.floor(Math.random() * (50 - 45 + 1) + 45);
         this.img = document.getElementById("surfer");
-        this.imgSize = 0.2;
+        this.imgSize = 0.3;
         this.imgFlipped = true;
-		this.h1="Taucher";
-		this.src="../../resources/binary/objects/surfer.svg";
+		    this.h1="Taucher";
+		    this.src="../../resources/binary/objects/surfer.svg";
       }
     }
 	  draw() {
       this.x += this.dx;
       this.y += this.dy;
 
-      if (this.x < -20) { this.visible=false; this.dx=0; this.dy=0; this.deleted = true; }
-      drawWithParamsCoordsSizeFlipped(this.img, this.x, this.y, this.imgSize, this.flipped);
+      if (framesPlayed % 320 == 0) this.flipped = !this.flipped;
+      if (this.x < ((this.img.width*this.imgSize*-1)-20)) { this.visible=false; this.dx=0; this.dy=0; this.deleted = true; }
+      if (this.visible) drawWithParamsCoordsSizeFlipped(this.img, this.x, this.y, this.imgSize, this.flipped);
     }
   }
   
@@ -68,12 +68,13 @@ $('document').ready(function(){
       this.x = canvas.width;
       this.y =Math.floor(Math.random() * (450 - 70 + 1) + 70);
 
-      this.dx = -1.2;
+      this.dx = -bgScrollSpeed;
       this.dy = 0;
       this.visible = true;
       this.deleted = false;
       this.imgSize = 1.0;
       this.imgFlipped = false;
+      this.rotate = false;
 
       this.img = undefined;
       if (type === 'anchor') {
@@ -85,17 +86,16 @@ $('document').ready(function(){
       if (type === 'bottle') {
         this.img = document.getElementById("bottle");
         this.imgSize = 0.15;
-        this.imgFlipped = true;
-        var ran = Math.random()*360;
-        this.img.style.transform = "rotate("+ran+"deg) !important";
-		this.h1="bottle";
-		this.tex="Jedes Jahr landen ungefähr 8 Millionen Tonnen Plastik im Meer. Momentan gibt es bereits mehr als 140 Millionen Tonnen Plastikmüll in den Meeren und Ozeanen. Dieser Plastik ist gefährlich für die Haie und andere Meeresbewohner und verursacht zu vielen Krankheiten für diese Tiere.";
-		this.src="../../resources/binary/objects/bottle.svg";
-	  }
+        this.imgFlipped = false;
+        this.rotate = true;
+		    this.h1="Plastikmüll";
+		    this.tex="Jedes Jahr landen ungefähr 8 Millionen Tonnen Plastik im Meer. Momentan gibt es bereits mehr als 140 Millionen Tonnen Plastikmüll in den Meeren und Ozeanen. Dieser Plastik ist gefährlich für die Haie und andere Meeresbewohner und verursacht zu vielen Krankheiten für diese Tiere.";
+		    this.src="../../resources/binary/objects/bottle.svg";
+	    }
 	    if (type === 'rock') {
         this.y = canvas.height - seaBorderMargin;
         this.img = document.getElementById("rock");
-        this.imgSize = 0.5;
+        this.imgSize = 0.65;
         this.imgFlipped = true;
 		
       }
@@ -112,8 +112,12 @@ $('document').ready(function(){
       this.x += this.dx;
       this.y += this.dy;
 
-      if (this.x < -20) { this.visible=false; this.dx=0; this.dy=0; this.deleted = true; }
-      drawWithParamsCoordsSizeFlipped(this.img, this.x, this.y, this.imgSize, this.flipped);
+
+      if (this.x < ((this.img.width*this.imgSize*-1)-20)) { this.visible=false; this.dx=0; this.dy=0; this.deleted = true; }
+      if (this.visible) {
+        if(this.rotate) drawWithParamsCoordsSizeRotFlipped(this.img, this.x, this.y, this.imgSize, framesPlayed/2.0, this.flipped);
+        else drawWithParamsCoordsSizeFlipped(this.img, this.x, this.y, this.imgSize, this.flipped);
+      }
 	  }
   }
 
@@ -139,12 +143,12 @@ $('document').ready(function(){
         this.img = document.getElementById("shark");
         this.imgSize = 0.4;
         this.diet = {
-          'greenfish' : 0.2, // wenn hai fish1 iss erlangt er 30% stamina dazu...
-          'bluefish' : 0.2, 
-          'orangefish' : 0.1,
-          'dolphin' : 0.6,
-          'seaturtle' : 0.4,
-          'seal' : 0.65
+          'greenfish' : 0.1, // wenn hai fish1 iss erlangt er 30% stamina dazu...
+          'bluefish' : 0.12, 
+          'orangefish' : 0.15,
+          'dolphin' : 0.4,
+          'seaturtle' : 0.3,
+          'seal' : 0.55
         };
         this.damageTable = {
           'diver' : 1.0,
@@ -200,8 +204,8 @@ $('document').ready(function(){
 
     decreaseStamina(value) {
       if (value === undefined && !win) {
-        if (this.stamina - 0.001 < 0.0) this.stamina = 0;
-        else this.stamina -= 0.001;
+        if (this.stamina - 0.0015 < 0.0) this.stamina = 0;
+        else this.stamina -= 0.0015;
       } else if (!win){
         if (this.stamina - value < 0.0) this.stamina = 0;
         else this.stamina -= value;
@@ -265,85 +269,105 @@ $('document').ready(function(){
       this.dx = -2;
       this.imgSize = 1.0;
       this.imgFlipped = false;
-      
+      this.rotate = false;
+      this.sightDistance = 140;
+      this.fleeSpeed = 0.6;
+
       if(type === 'greenfish') {
         this.imgFlipped = true;
-        this.imgSize = 0.2;
+        this.imgSize = 0.15;
         this.img = document.getElementById("green_fish");
-        this.dx = (Math.random()*(-2)) - 1;
+        this.dx = (Math.random()*(-2.5)) - 1;
+        this.sightDistance = 100;
       }
 	    if(type === 'bluefish') {
         this.imgFlipped = true;
-        this.imgSize = 0.2;
+        this.imgSize = 0.15;
         this.img = document.getElementById("blue_fish");
-        this.dx = (Math.random()*(-2)) - 1;
+        this.dx = (Math.random()*(-2.5)) - 1;
+        this.sightDistance = 100;
       }
 	    if(type === 'orangefish') {
         this.imgFlipped = true;
-        this.imgSize = 0.2;
+        this.imgSize = 0.15;
         this.img = document.getElementById("orange_fish");
-        this.dx = (Math.random()*(-2)) - 1;
+        this.dx = (Math.random()*(-2.5)) - 1;
+        this.sightDistance = 100;
       }
 	    if(type === 'dolphin') {
         this.imgFlipped = false;
-        this.imgSize = 0.2;
+        this.imgSize = 0.25;
         this.img = document.getElementById("dolphin");
-        this.dx = (Math.random()*(-2)) - 1;
+        this.dx = (Math.random()*(-2.5)) - 1;
+        this.fleeSpeed = 1.4;
       }
 	    if(type === 'octopus') {
         this.imgFlipped = true;
-        this.imgSize = 0.15;
+        this.imgSize = 0.2;
         this.img = document.getElementById("octopus");
-        this.dx = (Math.random()*(-2)) - 1;
+        this.dx = (Math.random()*(-2.5)) - 1;
+        this.fleeSpeed = 1.6;
       }
 	    if(type === 'plankton') {
         this.imgFlipped = false;
         this.imgSize = 0.08;
         this.img = document.getElementById("plankton");
-        this.dx = (Math.random()*(-2)) - 1;
+        this.dx = (Math.random()*(-2.5)) - 1;
+        this.sightDistance = 60;
+        this.fleeSpeed = 0.1;
       }
 	    if(type === 'plankton_blue') {
         this.imgFlipped = true;
         this.imgSize = 0.08;
         this.img = document.getElementById("plankton_blue");
-        this.dx = (Math.random()*(-2)) - 1;
+        this.dx = (Math.random()*(-2.5)) - 1;
+        this.sightDistance = 60;
+        this.fleeSpeed = 0.1;
       }
 	    if(type === 'seahorse_green') {
         this.imgFlipped = true;
         this.imgSize = 0.1;
         this.img = document.getElementById("seahorse_green");
-        this.dx = (Math.random()*(-2)) - 1;
+        this.dx = (Math.random()*(-2.5)) - 1;
+        this.sightDistance = 60;
+        this.fleeSpeed = 0.4;
       }
 	    if(type === 'seahorse_pink') {
         this.imgFlipped = true;
         this.imgSize = 0.1;
         this.img = document.getElementById("seahorse_pink");
-        this.dx = (Math.random()*(-2)) - 1;
+        this.dx = (Math.random()*(-2.5)) - 1;
+        this.sightDistance = 60;
+        this.fleeSpeed = 0.4;
       }
 	    if(type === 'seal') {
         this.imgFlipped = true;
-        this.imgSize = 0.2;
+        this.imgSize = 0.35;
         this.img = document.getElementById("seal");
-        this.dx = (Math.random()*(-2)) - 1;
+        this.dx = (Math.random()*(-2.5)) - 1;
+        this.sightDistance = 160;
+        this.fleeSpeed = 1.5;
       }
 	    if(type === 'seaturtle') {
         this.imgFlipped = false;
-        this.imgSize = 0.1;
+        this.imgSize = 0.25;
         this.img = document.getElementById("seaturtle");
-        this.dx = (Math.random()*(-2)) - 1;
+        this.dx = (Math.random()*(-2.5)) - 1;
+        this.sightDistance = 110;
       }
 	    if(type === 'starfish_orange') {
         this.imgFlipped = true;
         this.imgSize = 0.1;
         this.img = document.getElementById("starfish_orange");
-        this.dx = (Math.random()*(-2)) - 1;
+        this.dx = (Math.random()*(-2.5)) - 1;
+        this.sightDistance = 60;
       }
     }
     draw() {
       this.x += this.dx;
       this.y += this.dy;
 
-      if (this.x < -20) { this.visible=false; this.dx=0; this.dy=0; this.deleted = true; }
+      if (this.x < ((this.img.width*this.imgSize*-1)-20)) { this.visible=false; this.dx=0; this.dy=0; this.deleted = true; }
       if (this.visible) drawWithParamsCoordsSizeFlipped(this.img, this.x, this.y, this.imgSize, this.imgFlipped);
     }
   }
@@ -356,16 +380,7 @@ $('document').ready(function(){
   var gameOver = false;
 
   var sea = document.getElementById("see");
- 
-  var seaPtnr = ctx.createPattern(sea, 'repeat'); // Create a pattern with this image, and set it to "repeat".
-  
-  //drawing = new Image();
-  //drawing.onload = function() {
-  //  setInterval(draw, 10);
-  //};
-  //drawing.src = "../../resources/binary/sharks/great_shark.PNG"; // can also be a remote URL e.g. http://
   var imgWidth = canvas.width; 
-
 
   function drawSea() {
     ctx.drawImage(sea, imgWidth, 0,canvas.width,canvas.height);
@@ -375,49 +390,61 @@ $('document').ready(function(){
   }
 
   function increaseFramesPlayed () {
-    if (framesPlayed < framesToPlay) framesPlayed++;
-    else win = true;
+    if (!gameOver && !win) {
+      if (framesPlayed < framesToPlay) framesPlayed++;
+      else win = true
+    }
   }
 
   function globalDraw() {
-	 
-
-    if(!gameOver && !win)increaseFramesPlayed();
-    ctx.beginPath();
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    drawSea();
-    if (!gameOver && !win) generateObjects();
-
-    fishes.forEach(f => { f.draw(); });
-    if (!gameOver && !win) fishes.forEach(f => { detectCollision(shark, f); });
-
-    otherFishes.forEach(f => { f.draw(); });
-    if (!gameOver && !win) otherFishes.forEach(f => { detectCollision(shark, f); });
-
-    seaObjects.forEach(o => { o.draw(); });
-    if (!gameOver && !win) seaObjects.forEach(o => { detectCollision(shark, o); });
-
-    humans.forEach(h => { h.draw(); });
-    if (!gameOver && !win) humans.forEach(h => { detectCollision(shark, h); });
-
-    shark.draw();
-    drawUI();
-    
+    increaseFramesPlayed();
+    generateObjects();
+    drawAllObjects();
+    detectCollisionAllObjects();
     collectGarbage();
-    if (gameOver && !win) drawGameOverScreen();
-    if (win && !gameOver) drawWinScreen();
-
+    drawUI();
   }
 
-  function detectCollision(sharkObj, coliderObj) {
+  function drawAllObjects() {
+    ctx.beginPath();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawSea();
+    fishes.forEach(f => { f.draw(); });
+    otherFishes.forEach(f => { f.draw(); });
+    seaObjects.forEach(o => { o.draw(); });
+    humans.forEach(h => { h.draw(); });
+    shark.draw();
+  }
+
+  function detectCollisionAllObjects() {
+    if(!gameOver && !win) {
+      if (!gameOver && !win) fishes.forEach(f => { detectCollision(shark, f, true); });
+      if (!gameOver && !win) otherFishes.forEach(f => { detectCollision(shark, f, false); });
+      if (!gameOver && !win) seaObjects.forEach(o => { detectCollision(shark, o, false); });
+      if (!gameOver && !win) humans.forEach(h => { detectCollision(shark, h, false); });
+    }
+  }
+
+  function detectCollision(sharkObj, coliderObj, isDietObj) {
     if (sharkObj.x < coliderObj.x + coliderObj.img.width*coliderObj.imgSize &&
       sharkObj.x + sharkObj.img.width*sharkObj.imgSize > coliderObj.x &&
       sharkObj.y < coliderObj.y + coliderObj.img.height*coliderObj.imgSize &&
       sharkObj.y + sharkObj.img.height*sharkObj.imgSize > coliderObj.y) {
        
         sharkObj.eat(coliderObj);
+    } else if (isDietObj) {
+      //move away from shark
+      if (Math.abs((sharkObj.x+sharkObj.img.width*sharkObj.imgSize)- coliderObj.x) < coliderObj.sightDistance &&
+          Math.abs((sharkObj.y+sharkObj.img.width*sharkObj.imgSize)- coliderObj.y) < coliderObj.sightDistance) {
+        var sign = -1;
+        if ((sharkObj.y - coliderObj.y) < 0) sign = 1;
+        coliderObj.dy = sign*coliderObj.fleeSpeed;
+      } else {
+        coliderObj.dy = 0;
+      }
     }
+
+
     if (debug) {
       ctx.rect(sharkObj.x, sharkObj.y, sharkObj.img.width*sharkObj.imgSize, sharkObj.img.height*sharkObj.imgSize)
       ctx.strokeStyle = "red"; 
@@ -446,55 +473,62 @@ $('document').ready(function(){
     });
   }
 
+  var lastframerendered = 1;
   function generateObjects() {
-    const maxfishesrendered = 8;
-    const seastuffratio = 0.2;
-    const otherfishesratio = 0.5;
-    const humansratio = 0.15;
-    const maxseastuffrendered = Math.ceil(maxfishesrendered*seastuffratio);
-    const maxhumansrendered = Math.ceil(maxfishesrendered*humansratio);
-    const maxotherfishesrendered = Math.ceil(maxfishesrendered*otherfishesratio);
-    const maxModuloValue = 20;
+    if (!gameOver && !win) {
+      const maxfishesrendered = 6;
+      const seastuffratio = 0.1;
+      const otherfishesratio = 0.65;
+      const humansratio = 0.05;
+      const maxseastuffrendered = Math.ceil(maxfishesrendered*seastuffratio);
+      const maxhumansrendered = Math.ceil(maxfishesrendered*humansratio);
+      const maxotherfishesrendered = Math.ceil(maxfishesrendered*otherfishesratio);
+      const maxModuloValue = 20;
 
-    var overalldietprobability = 0.25;
-    var sharkstaminaprobability = (1.0 - shark.stamina);
-    var fishesprobability = 1.0-(fishes.length/maxfishesrendered);
+      var frameprobability = 1.0-(lastframerendered/framesPlayed);
 
-    var dietkeys = Object.keys(shark.diet);
-    var diettospawnkey = dietkeys[(framesPlayed % dietkeys.length)]; 
-    var diettospawnprobability = 1.0-shark.diet[diettospawnkey];
-    
-    spawningfishprobability = overalldietprobability*sharkstaminaprobability*diettospawnprobability*fishesprobability;
-    var modulooperator = getModuloOperatorByProbability(spawningfishprobability, maxModuloValue);
-    // if (debug) console.log('prob:' + spawningfishprobability*100);
+      var sharkstaminaprobability = (1.0 - shark.stamina);
+      var fishesprobability = 1.0-(fishes.length/maxfishesrendered);
 
-    if (spawningfishprobability >= 1/maxModuloValue && (Math.floor(Math.random() * 101) % modulooperator) == 0) {
-      fishes.push(new fischy(diettospawnkey));
-    }
+      var dietkeys = Object.keys(shark.diet);
+      var diettospawnkey = dietkeys[(framesPlayed % dietkeys.length)]; 
+      var diettospawnprobability = 1.0-(shark.diet[diettospawnkey]*0.4);
+      
+      var spawningfishprobability = sharkstaminaprobability*diettospawnprobability*fishesprobability;
+      var modulooperator = getModuloOperatorByProbability(spawningfishprobability, maxModuloValue);
+      // if (debug) console.log('prob:' + spawningfishprobability*100);
 
-    var otherFishesNames = fischy.NAMES.filter((name) => !(Object.keys(shark.diet)).includes( name));
-    maxotherfishesprobability = (1.0-(otherFishesNames.length/maxotherfishesrendered))*0.8;
-    otherfishtodraw = otherFishesNames[(framesPlayed % otherFishesNames.length)]
-    modulooperator = getModuloOperatorByProbability(maxotherfishesprobability, maxModuloValue);
-    if (maxotherfishesprobability >= 1/maxModuloValue && (Math.floor(Math.random() * 101) % modulooperator) == 0) {
-      otherFishes.push(new fischy(otherfishtodraw));
-    }
+      if (spawningfishprobability >= 1/maxModuloValue && (framesPlayed % modulooperator) == 0) {
+        fishes.push(new fischy(diettospawnkey));
+      }
 
-    var seaObjectNames = seaObject.NAMES;
-    seastuffrenderprobability = (1.0-(seaObjects.length/maxseastuffrendered))*0.3*0.8;
-    stufftorender = seaObjectNames[(framesPlayed % seaObjectNames.length)]
-    if(stufftorender === 'treasure') seastuffrenderprobability*0.33;
-    modulooperator = getModuloOperatorByProbability(seastuffrenderprobability, maxModuloValue*2);
-    if (seastuffrenderprobability >= 1/maxModuloValue && (Math.floor(Math.random() * 101) % modulooperator) == 0) {
-      seaObjects.push(new seaObject(stufftorender));
-    }
+      var otherFishesNames = fischy.NAMES.filter((name) => !(Object.keys(shark.diet)).includes(name));
+      var maxotherfishesprobability = (1.0-(otherFishes.length/maxotherfishesrendered))*frameprobability;
+      var otherfishtodraw = otherFishesNames[(framesPlayed % otherFishesNames.length)]
+      modulooperator = getModuloOperatorByProbability(maxotherfishesprobability, maxModuloValue);
+      if (maxotherfishesprobability >= 1/maxModuloValue && (framesPlayed % modulooperator) == 0) {
+        otherFishes.push(new fischy(otherfishtodraw));
+        lastframerendered = framesPlayed;
+      }
 
-    var humanNames = human.NAMES;
-    humanrenderprobability = (1.0-(humans.length/maxhumansrendered))*0.2*0.8;
-    humantorender = humanNames[(framesPlayed % humanNames.length)]
-    modulooperator = getModuloOperatorByProbability(humanrenderprobability, maxModuloValue*2);
-    if (humanrenderprobability >= 1/maxModuloValue && (Math.floor(Math.random() * 101) % modulooperator) == 0) {
-      humans.push(new human(humantorender));
+      var seaObjectNames = seaObject.NAMES;
+      var seastuffrenderprobability = (1.0-(seaObjects.length/maxseastuffrendered))*frameprobability;
+      var stufftorender = seaObjectNames[(framesPlayed % seaObjectNames.length)]
+      if(stufftorender === 'treasure') seastuffrenderprobability=seastuffrenderprobability*0.33;
+      modulooperator = getModuloOperatorByProbability(seastuffrenderprobability, maxModuloValue*2);
+      if (seastuffrenderprobability >= 1/maxModuloValue && (framesPlayed % modulooperator) == 0) {
+        seaObjects.push(new seaObject(stufftorender));
+        lastframerendered = framesPlayed;
+      }
+
+      var humanNames = human.NAMES;
+      var humanrenderprobability = (1.0-(humans.length/maxhumansrendered))*0.2*frameprobability;
+      var humantorender = humanNames[(framesPlayed % humanNames.length)]
+      modulooperator = getModuloOperatorByProbability(humanrenderprobability, maxModuloValue*2);
+      if (humanrenderprobability >= 1/maxModuloValue && (framesPlayed % modulooperator) == 0) {
+        humans.push(new human(humantorender));
+        lastframerendered = framesPlayed;
+      }
     }
   }
 
@@ -504,83 +538,6 @@ $('document').ready(function(){
       modulooperator = i;
     }
     return modulooperator;
-
-    // if (probability <= 0.5) modulooperator = 2;
-    // if (probability <= 0.3333) modulooperator = 3;
-    // if (probability <= 0.25) modulooperator = 4;
-    // if (probability <= 0.2) modulooperator = 5;
-    // if (probability <= 0.1667) modulooperator = 6;
-    // if (probability <= 0.1429) modulooperator = 7;
-    // if (probability <= 0.125) modulooperator = 8;
-    // if (probability <= 0.1111) modulooperator = 9;
-    // if (probability <= 0.1) modulooperator = 10;
-  }
-
-  function generateFish() {
-    var ran = Math.random()*1000;
-    if(Math.round(ran) === 50) {
-      fishes.push(new fischy('greenfish'))
-    }
-	  if(Math.round(ran) === 49) {
-      fishes.push(new fischy('bluefish'))
-    }
-	  if(Math.round(ran) === 48) {
-      fishes.push(new fischy('orangefish'))
-    }
-	  if(Math.round(ran) === 51) {
-      fishes.push(new fischy('dolphin'))
-    }
-	  if(Math.round(ran) === 52) {
-      fishes.push(new fischy('octopus'))
-    }
-	  if(Math.round(ran) === 53) {
-      fishes.push(new fischy('plankton'))
-    }
-	  if(Math.round(ran) === 54) {
-      fishes.push(new fischy('plankton_blue'))
-    }
-	  if(Math.round(ran) === 55) {
-      fishes.push(new fischy('seahorse_green'))
-    }
-	  if(Math.round(ran) === 56) {
-      fishes.push(new fischy('seahorse_pink'))
-    }
-	  if(Math.round(ran) === 57) {
-      fishes.push(new fischy('seal'))
-    }
-	  if(Math.round(ran) === 58) {
-      fishes.push(new fischy('seaturtle'))
-    }
-	  if(Math.round(ran) === 59) {
-      fishes.push(new fischy('starfish_orange'))
-    }
-  }
-  
-  function generateHuman(){
-	  var ran = Math.random()*500;
-    if(Math.round(ran) === 50) {
-      humans.push(new human('diver'))
-    }
-	  if(Math.round(ran) === 51) {
-      humans.push(new human('surfer'))
-    }
-  }
-	  
-
-  function generateSeaObjects() {
-    var ran = Math.random()*2500;
-    if(Math.round(ran) === 100) {
-      seaObjects.push(new seaObject('anchor'));
-    }
-	  if(Math.round(ran) === 101) {
-      seaObjects.push(new seaObject('bottle'));
-    }
-	  if(Math.round(ran) === 102) {
-      seaObjects.push(new seaObject('rock'));
-    }
-	  if(Math.round(ran) === 102) {
-      seaObjects.push(new seaObject('treasure'));
-    }
   }
 
   function drawGameOverScreen() {
@@ -603,7 +560,7 @@ $('document').ready(function(){
     ctx.globalAlpha = 1.0;
     ctx.font = '48px serif';
     ctx.fillStyle = "#52e590"; 
-    ctx.fillText('GEWONNEN!', 270, 200);
+    ctx.fillText('GEWONNEN!', 250, 200);
     ctx.fillStyle = "white"; 
     ctx.font = '24px serif';
     ctx.fillText('Enter f\u00fcr Neustart', 300, 250);
@@ -619,6 +576,7 @@ $('document').ready(function(){
     gameOver = false; 
     win = false;
     framesPlayed = 0;
+    lastframerendered = 1;
   }
 
   function getGameTimePercentage() {
@@ -628,6 +586,8 @@ $('document').ready(function(){
   function drawUI() {
     drawStaminaBar();
     drawTimeBar();
+    if (gameOver && !win) drawGameOverScreen();
+    if (win && !gameOver) drawWinScreen();
   }
 
   function drawTimeBar() {
@@ -643,12 +603,16 @@ $('document').ready(function(){
   }
 
   function drawStaminaBar() {
-    ctx.rect(10, canvas.height-20, canvas.width-20, 10);
+    ctx.rect(35, canvas.height-20, canvas.width-45, 10);
     ctx.fillStyle = "lightgreen"; 
-    ctx.fillRect(10, canvas.height-20, (canvas.width-20)*shark.stamina, 10)
+    ctx.fillRect(35, canvas.height-20, (canvas.width-45)*shark.stamina, 10)
     ctx.strokeStyle = "black"; 
     ctx.lineWidth = "2"; 
     ctx.stroke(); 
+
+    ctx.fillStyle = "green"; 
+    ctx.font='24px FontAwesome';
+    ctx.fillText('\uf067',10,canvas.height-10);
   }
 
   gameLoop = setInterval(globalDraw, drawPerMs);
