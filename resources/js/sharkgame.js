@@ -639,8 +639,12 @@ $('document').ready(function(){
     ctx.fillText('\uf067',10,canvas.height-10);
   }
 
-  gameLoop = setInterval(globalDraw, drawPerMs);
+  //gameLoop = setInterval(globalDraw, drawPerMs);
+   $('#infoModal').modal('show');
+   	document.getElementById("sharkimage").src="../../resources/binary/img/screenshot.jpg";
 
+	document.getElementById("text").textContent="In diesem Spiel steuerst du einen hungrigen Hai, der auf der Suche nach Nahrung ist. Mit der oberen und unteren Pfeiltaste bewegst du den Hai. Wenn du die richtige Nahrung frisst, erhältst du mehr Energie. Pass jedoch auf, dass du nicht etwas Falsches frisst, da falsche Nahrung deine Energie reduziert.";
+    document.getElementById("infoModalLongTitle").innerHTML ="Spielanleitung";
   function drawWithParamsCoords(object, x, y) {
     drawWithParamsCoordsSize(object, x, y, 1);
   }
