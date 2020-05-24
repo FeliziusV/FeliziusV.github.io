@@ -122,7 +122,7 @@ $('document').ready(function(){
   }
 
   class sharky {
-    static NAMES = ['tiger', 'whale'];
+    static NAMES = ['great', 'whale'];
 
     constructor(type) {
       this.type = type;
@@ -138,7 +138,8 @@ $('document').ready(function(){
 
       this.diet = undefined;
       this.img = undefined;
-      if(type === 'tiger') {
+      if(type === 'great') {
+        this.idleStaminaDecreaseValue = 0.0015;
         this.imgFlipped = true;
         this.img = document.getElementById("shark");
         this.imgSize = 0.4;
@@ -162,17 +163,36 @@ $('document').ready(function(){
           'anchor' : 0.65,
           'bottle' : 0.35,
           'rock' : 1.0,
-          'treasure' : 0.35
+          'treasure' : 0
         };
       }
       else if (type === 'whale') {
-        this.img = undefined // todo
+        this.idleStaminaDecreaseValue = 0.001;
+        this.imgFlipped = false;
+        this.img = document.getElementById("whale");
         this.imgSize = 0.4;
         this.diet = {
-          'greenfish' : 0.3, // wenn hai fish1 iss erlangt er 30% stamina dazu...
-          'fishtype2' : 1.0, 
-          'fishtype3' : 0.5, 
-        }
+          'greenfish' : 0.1,
+          'bluefish' : 0.1, 
+          'orangefish' : 0.1,
+          'plankton' : 0.15, 
+          'plankton_blue' : 0.15, 
+          'seahorse_green' : 0.2,
+          'seahorse_pink' : 0.2,
+          'starfish_orange' : 0.2,
+          'seaturtle' : 0.25
+        };
+        this.damageTable = {
+          'diver' : 1.0,
+          'surfer' : 1.0,
+          'octopus' : 0.3,
+          'dolphin' : 0.35,
+          'seal' : 0.35,
+          'anchor' : 0.65,
+          'bottle' : 0.35,
+          'rock' : 1.0,
+          'treasure' : 0
+        };
       }
     }
 
@@ -310,7 +330,7 @@ $('document').ready(function(){
       }
 	    if(type === 'plankton') {
         this.imgFlipped = false;
-        this.imgSize = 0.08;
+        this.imgSize = 0.1;
         this.img = document.getElementById("plankton");
         this.dx = (Math.random()*(-2.5)) - 1;
         this.sightDistance = 60;
@@ -318,7 +338,7 @@ $('document').ready(function(){
       }
 	    if(type === 'plankton_blue') {
         this.imgFlipped = true;
-        this.imgSize = 0.08;
+        this.imgSize = 0.1;
         this.img = document.getElementById("plankton_blue");
         this.dx = (Math.random()*(-2.5)) - 1;
         this.sightDistance = 60;
@@ -326,7 +346,7 @@ $('document').ready(function(){
       }
 	    if(type === 'seahorse_green') {
         this.imgFlipped = true;
-        this.imgSize = 0.1;
+        this.imgSize = 0.15;
         this.img = document.getElementById("seahorse_green");
         this.dx = (Math.random()*(-2.5)) - 1;
         this.sightDistance = 60;
@@ -334,7 +354,7 @@ $('document').ready(function(){
       }
 	    if(type === 'seahorse_pink') {
         this.imgFlipped = true;
-        this.imgSize = 0.1;
+        this.imgSize = 0.15;
         this.img = document.getElementById("seahorse_pink");
         this.dx = (Math.random()*(-2.5)) - 1;
         this.sightDistance = 60;
@@ -357,7 +377,7 @@ $('document').ready(function(){
       }
 	    if(type === 'starfish_orange') {
         this.imgFlipped = true;
-        this.imgSize = 0.1;
+        this.imgSize = 0.15;
         this.img = document.getElementById("starfish_orange");
         this.dx = (Math.random()*(-2.5)) - 1;
         this.sightDistance = 60;
@@ -376,7 +396,7 @@ $('document').ready(function(){
   var otherFishes = [];
   var seaObjects = [];
   var humans = [];
-  let shark = new sharky('tiger');
+  let shark = new sharky('great');
   var gameOver = false;
 
   var sea = document.getElementById("see");
@@ -564,11 +584,15 @@ $('document').ready(function(){
     ctx.fillStyle = "white"; 
     ctx.font = '24px serif';
     ctx.fillText('Enter f\u00fcr Neustart', 300, 250);
-
   }
 
+  var isDefaultShark = true;
   function restartGame() {
-    shark = new sharky('tiger');
+    isDefaultShark = !isDefaultShark;
+    var sharkname = sharky.NAMES[0];
+    if(!isDefaultShark) sharkname = sharky.NAMES[1];
+    
+    shark = new sharky(sharkname);
     fishes = [];
     otherFishes = [];
     seaObjects = [];
