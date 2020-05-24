@@ -18,6 +18,10 @@ $('document').ready(function(){
   var framesPlayed = 0;
   var win = false;
   var gameLoop;
+  var damageStaminaBarColor = 'darkred';
+  var damageStaminaBarColorLight = 'red';
+  var increaseStaminaBarColor = 'green';
+  var defaultStaminaBarColor = 'lightgreen';
   
   class human{
     static NAMES = ['diver', 'surfer'];
@@ -32,7 +36,7 @@ $('document').ready(function(){
       this.deleted = false;
       this.imgSize = 1.0;
       this.imgFlipped = false;
-	    this.tex="Haie greifen Menschen nur dann, wenn der Mensch ihm Angst macht, also als Verteidigung. Im Jahr 2019, wurden insgesamt nur 64 Menschen von Haien angegriffen. Die Chancen von einem Hai attackiert zu werden liegen bei 11.5 Millionen zu eins.";
+	    this.tex="Haie greifen Menschen nur dann, wenn diese ihn Angst macht, also nur aus Verteidigung. Im Jahr 2019, wurden insgesamt nur 64 Menschen von Haien angegriffen. Die Chancen von einem Hai attackiert zu werden liegen bei 11.5 Millionen zu eins.";
       if (type === 'diver') {
 		    this.y = Math.floor(Math.random() * (500 - 60 + 1) + 60);
         this.img = document.getElementById("diver");
@@ -135,6 +139,10 @@ $('document').ready(function(){
       this.deleted = false;
       this.imgSize = 1.0;
       this.imgFlipped = false;
+      this.acceleration = 1.2;
+      this.blinkingDurationFrames = 0;
+      this.maxBlinkingFrames = 100;
+      this.lastDamageFrame = 0;
 
       this.diet = undefined;
       this.img = undefined;
@@ -167,10 +175,11 @@ $('document').ready(function(){
         };
       }
       else if (type === 'whale') {
+        this.acceleration = 1.05;
         this.idleStaminaDecreaseValue = 0.001;
         this.imgFlipped = false;
         this.img = document.getElementById("whale");
-        this.imgSize = 0.4;
+        this.imgSize = 0.5;
         this.diet = {
           'greenfish' : 0.1,
           'bluefish' : 0.1, 
@@ -237,6 +246,20 @@ $('document').ready(function(){
       }
     }
 
+    getStaminaColor() {
+      if (this.blinkingDurationFrames < 0) {
+        this.blinkingDurationFrames++;
+        for(var i = 0; i < 9; i++) { if(framesPlayed % 16 == i) { return damageStaminaBarColor; } }
+        return damageStaminaBarColorLight;
+
+      } else if (this.blinkingDurationFrames > 0) {
+        this.blinkingDurationFrames--;
+        for(var i = 0; i < 9; i++) { if(framesPlayed % 16 == i) { return increaseStaminaBarColor; } }
+        return defaultStaminaBarColor;
+      
+      } else return defaultStaminaBarColor;
+    }
+
     eat(object) {
       if (object.hasOwnProperty('type')) {
         // game objects with type
@@ -244,23 +267,30 @@ $('document').ready(function(){
           if (object.type in this.diet) {
             // object is in diet of shark -> gain stamina!
             object.visible = false;
-            this.increaseStamina(this.diet[object.type]);
+            
+            var staminaToIncrease = this.diet[object.type];
+            this.blinkingDurationFrames = Math.ceil(this.maxBlinkingFrames*staminaToIncrease);
+
+            this.increaseStamina(staminaToIncrease);
+
           } else if (object.type in this.damageTable) {
             // object is NOT in diet of shark -> decrease stamina!
             object.visible = false;
-            this.decreaseStamina(this.damageTable[object.type]); 
+            
+            var staminaToDecrease = this.damageTable[object.type];
+            this.blinkingDurationFrames = -(Math.ceil(this.maxBlinkingFrames*staminaToDecrease));
+            
+            this.decreaseStamina(staminaToDecrease); 
 			      if(object.hasOwnProperty("h1")){
 				      $('#infoModal').modal('show');
 			        document.getElementById("sharkimage").src=object.src;
 			        document.getElementById("text").textContent=object.tex;
 			        document.getElementById("infoModalLongTitle").innerHTML =object.h1;
 			        document.getElementById("continue").disabled = true;
-        			document.getElementById("exit").disabled = true;
 			        document.getElementById("continue").style="background-color: grey"
 			
               clearInterval(gameLoop);
               setTimeout(function () {
-            	  document.getElementById("exit").disabled = false;
 			          document.getElementById("continue").disabled = false;
 			          document.getElementById("continue").style="background-color: #6aa84f";
               }, 5000);
@@ -628,7 +658,7 @@ $('document').ready(function(){
 
   function drawStaminaBar() {
     ctx.rect(35, canvas.height-20, canvas.width-45, 10);
-    ctx.fillStyle = "lightgreen"; 
+    ctx.fillStyle = shark.getStaminaColor(); 
     ctx.fillRect(35, canvas.height-20, (canvas.width-45)*shark.stamina, 10)
     ctx.strokeStyle = "black"; 
     ctx.lineWidth = "2"; 
@@ -638,13 +668,17 @@ $('document').ready(function(){
     ctx.font='24px FontAwesome';
     ctx.fillText('\uf067',10,canvas.height-10);
   }
+ 
+  function initialize() {
+    $('#infoModal').modal('show');
+    document.getElementById("sharkimage").src="../../resources/binary/img/screenshot.jpg";
+    document.getElementById("text").textContent="In diesem Spiel steuerst du einen hungrigen Hai, der auf der Suche nach Nahrung ist. Mit der oberen und unteren Pfeiltaste bewegst du den Hai. Wenn du die richtige Nahrung frisst, erhältst du mehr Energie. Pass jedoch auf, dass du nicht etwas Falsches frisst, da falsche Nahrung deine Energie reduziert.";
+    document.getElementById("infoModalLongTitle").innerHTML ="Spielanleitung";  
+  }
 
-  //gameLoop = setInterval(globalDraw, drawPerMs);
-   $('#infoModal').modal('show');
-   	document.getElementById("sharkimage").src="../../resources/binary/img/screenshot.jpg";
-
-	document.getElementById("text").textContent="In diesem Spiel steuerst du einen hungrigen Hai, der auf der Suche nach Nahrung ist. Mit der oberen und unteren Pfeiltaste bewegst du den Hai. Wenn du die richtige Nahrung frisst, erhältst du mehr Energie. Pass jedoch auf, dass du nicht etwas Falsches frisst, da falsche Nahrung deine Energie reduziert.";
-    document.getElementById("infoModalLongTitle").innerHTML ="Spielanleitung";
+  // Start the manual -> After that start the game...
+  initialize();
+  
   function drawWithParamsCoords(object, x, y) {
     drawWithParamsCoordsSize(object, x, y, 1);
   }
@@ -683,8 +717,8 @@ $('document').ready(function(){
 
   document.addEventListener('keydown', (e) => {
     if (!gameOver && !win) {
-      if (e.code === "ArrowUp" && shark.dy > -10)       shark.dy -= 1.2;
-      else if (e.code === "ArrowDown" && shark.dy < 10) shark.dy += 1.2;
+      if (e.code === "ArrowUp" && shark.dy > -10)       shark.dy -= shark.acceleration;
+      else if (e.code === "ArrowDown" && shark.dy < 10) shark.dy += shark.acceleration;
     }
     else if (e.code === "Enter") {
       restartGame();
