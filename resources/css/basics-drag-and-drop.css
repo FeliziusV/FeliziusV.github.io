@@ -25,9 +25,12 @@ p{
 		color: white;
 
 }
-.container {
-  height: 100%;
-  vertical-align: middle;
+.cont {
+  height: auto;
+  width: auto;
+  /*vertical-align: middle;*/
+  margin: 0 auto;
+  text-align:center;
 }
 .drop-zone {
   border-radius:7px;
