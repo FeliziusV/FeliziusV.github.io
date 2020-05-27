@@ -60,7 +60,103 @@
 
         </div>
         <div class="modal-footer" style=" border-top: 0 none">
-          <button id="continue" type="button" class="btn btn-secondary" data-dismiss="modal" style="background-color: #6aa84f">OK</button>
+          <button id="continue" type="button" class="btn btn-success" data-dismiss="modal">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade in" id="introductionModal" tabindex="-1" role="dialog" aria-labelledby="infoModalTitle" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+        <div id="introduction-modal-header" class="modal-header" style="border-bottom: 0 none">
+          <h5 class="modal-title" id="introTitle">Spieleanleitung</h5>
+          <!--button type="button" id="exit" class="close" data-dismiss="modal" aria-label="Close" onclick="continueGame();">
+            <span aria-hidden="true">&times;</span>
+          </button-->
+        </div>
+        <div id="introduction-modal-body" class="modal-body">
+
+
+
+          <div id="introductioncarousel" data-interval="false" data-wrap="false" class="carousel slide" data-ride="carousel">
+            <div class="carousel-inner">
+              <div class="carousel-item active">
+                <img class="d-block w-100" src="../../resources/binary/img/screenshot.JPG" alt="First slide">
+                <div class="carousel-caption d-none d-md-block">
+                  <h5>Hai-Ernährungsspiel</h5>
+                  <p>In diesem Spiel steuerst du einen hungrigen Hai, der auf der Suche nach Nahrung ist. 
+                    Wenn Du es schaffst, dass dein Hai bis zum Ziel nicht verhungert, gewinnst Du!</p>
+                </div>
+              </div>
+              <div class="carousel-item" style="text-align: center;">
+                <i class="fa fa-angle-up fa-lg"></i>
+                <br/>
+                <img src="../../resources/binary/sharks/great_shark.svg" alt="shark" style="height: 250px;">
+                <br/>
+                <i class="fa fa-angle-down fa-lg" style="height: 100px;"></i>
+                <div class="carousel-caption d-none d-md-block">
+                  <h5>Bewegung</h5>
+                  <p>Benutze die Pfeiltasten um den Hai nach oben bzw. unten zu steuern, damit Du deine Beute erwischt!
+                    Tipp: Drücke öfters hintereinander die Tasten, um ein gespür für die Bewegung zu erhalten, nicht jeder 
+                    Hai steuert sich gleich schnell.
+                  </p>
+                </div>
+              </div>
+              <div class="carousel-item">
+                <div id="intro-step-3-container">
+                  <img class="intro-step-3-svg" src="../../resources/binary/objects/dolphin.svg" alt="dolphin">
+                  <img class="intro-step-3-svg" src="../../resources/binary/objects/fish_aqua.svg" alt="blue fish">
+                  <img class="intro-step-3-svg" src="../../resources/binary/objects/octopus.svg" alt="octopus">
+                  <img class="intro-step-3-svg" src="../../resources/binary/objects/plankton.svg" alt="plankton">
+                  <img class="intro-step-3-svg" src="../../resources/binary/objects/plankton_blue.svg" alt="plankton_blue">
+                  <img class="intro-step-3-svg" src="../../resources/binary/objects/plantation_orange.svg" alt="plantation_orange">
+                  <img class="intro-step-3-svg" src="../../resources/binary/objects/seahorse_pink.svg" alt="seahorse_pink">
+                  <img class="intro-step-3-svg" src="../../resources/binary/objects/seal.svg" alt="seal">
+                  <img class="intro-step-3-svg" src="../../resources/binary/objects/seaturtle.svg" alt="seaturtle">
+                </div>
+                <div class="carousel-caption d-none d-md-block">
+                  <h5>Beute</h5>
+                  <p>Je nachdem, welchen Hai Du gerade spielst, musst Du die richtige Beute erwischen, um zu überleben!</p>
+                </div>
+              </div>
+              <div class="carousel-item">
+                <div id="intro-step-4-container">
+                  <img class="intro-step-4-svg step-4-shark" src="../../resources/binary/sharks/great_shark.svg" alt="shark">
+                  <img class="intro-step-4-svg" src="../../resources/binary/objects/fish_aqua.svg" alt="blue fish">
+                  <img class="intro-step-4-svg" src="../../resources/binary/objects/seaturtle.svg" alt="seaturtle">
+                </div>
+                <div class="carousel-caption d-none d-md-block">
+                  <h5>Der weiße Hai</h5>
+                  <p>Hier zwei Meereslebewesen die zu der Beute des weißen Hai gehören. Finde während des Spiels heraus, welche noch dazugehören.</p>
+                </div>
+              </div>
+              <div class="carousel-item">
+                <div id="intro-step-5-container">
+                  <img class="intro-step-5-svg step-5-shark" src="../../resources/binary/sharks/whale_shark.svg" alt="whale_shark">
+                  <img class="intro-step-5-svg" src="../../resources/binary/objects/seahorse_pink.svg" alt="seahorse_pink">
+                  <img class="intro-step-5-svg" src="../../resources/binary/objects/plankton.svg" alt="plankton">
+                </div>
+                <div class="carousel-caption d-none d-md-block">
+                  <h5>Der Walhai</h5>
+                  <p>Hier zwei Meereslebewesen die zu der Beute des Walhai gehören. Finde während des Spiels heraus, welche noch dazugehören.</p>
+                </div>
+              </div>
+            </div>
+            <a class="carousel-control-prev" href="#introductioncarousel" role="button" data-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#introductioncarousel" role="button" data-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="sr-only">Next</span>
+            </a>
+          </div>
+
+
+
+        </div>
+        <div id="introduction-modal-footer" class="modal-footer" style=" border-top: 0 none">
+          <button id="continue2" type="button" class="btn btn-dark" disabled="true" data-dismiss="modal">Spiel starten!</button>
         </div>
       </div>
     </div>
@@ -75,3 +171,4 @@ Your browser does not support the HTML5 canvas tag.
 <script type="application/javascript" src="../../resources/js/sharkgame.js"></script>
 </body>
 </html>
+

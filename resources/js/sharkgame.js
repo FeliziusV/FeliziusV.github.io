@@ -1,10 +1,3 @@
-// TODOs: ('-' = todo / '+' = done)
-// - Random Shark at the beginning (and display the name of the shark)
-// - Start Button at the Beginning (also maybe some tutorial for the game)
-// - Collision detection
-// - Eating mechanism
-// - streaks mechanism (multiplier for stamina increase on eating...)
-// 
 
 $('document').ready(function(){
   var canvas = document.getElementById("game");
@@ -440,7 +433,7 @@ $('document').ready(function(){
   }
 
   function increaseFramesPlayed () {
-    if (!gameOver && !win) {
+    if (!gameOver && !win && !choosingSharkState) {
       if (framesPlayed < framesToPlay) framesPlayed++;
       else win = true
     }
@@ -463,11 +456,11 @@ $('document').ready(function(){
     otherFishes.forEach(f => { f.draw(); });
     seaObjects.forEach(o => { o.draw(); });
     humans.forEach(h => { h.draw(); });
-    shark.draw();
+    if(!choosingSharkState) shark.draw();
   }
 
   function detectCollisionAllObjects() {
-    if(!gameOver && !win) {
+    if(!gameOver && !win && !choosingSharkState) {
       if (!gameOver && !win) fishes.forEach(f => { detectCollision(shark, f, true); });
       if (!gameOver && !win) otherFishes.forEach(f => { detectCollision(shark, f, false); });
       if (!gameOver && !win) seaObjects.forEach(o => { detectCollision(shark, o, false); });
@@ -525,7 +518,7 @@ $('document').ready(function(){
 
   var lastframerendered = 1;
   function generateObjects() {
-    if (!gameOver && !win) {
+    if (!gameOver && !win && !choosingSharkState) {
       const maxfishesrendered = 6;
       const seastuffratio = 0.1;
       const otherfishesratio = 0.65;
@@ -617,10 +610,11 @@ $('document').ready(function(){
   }
 
   var isDefaultShark = true;
+  var sharkIdx = 0;
+  var choosingSharkState = true;
   function restartGame() {
     isDefaultShark = !isDefaultShark;
-    var sharkname = sharky.NAMES[0];
-    if(!isDefaultShark) sharkname = sharky.NAMES[1];
+    var sharkname = sharky.NAMES[sharkIdx];
     
     shark = new sharky(sharkname);
     fishes = [];
@@ -633,6 +627,10 @@ $('document').ready(function(){
     lastframerendered = 1;
   }
 
+  function enterPressed(){
+    choosingSharkState = true;
+  }
+
   function getGameTimePercentage() {
     return framesPlayed/framesToPlay;
   }
@@ -640,8 +638,25 @@ $('document').ready(function(){
   function drawUI() {
     drawStaminaBar();
     drawTimeBar();
-    if (gameOver && !win) drawGameOverScreen();
-    if (win && !gameOver) drawWinScreen();
+    if (gameOver && !win && !choosingSharkState) drawGameOverScreen();
+    if (win && !gameOver && !choosingSharkState) drawWinScreen();
+    if (choosingSharkState) drawChooseScreen();
+  }
+
+  function drawChooseScreen() {
+    ctx.globalAlpha = 0.4;
+    ctx.fillStyle = "gray"; 
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.globalAlpha = 1.0;
+    ctx.font = '48px serif';
+    ctx.fillStyle = "black"; 
+    ctx.fillText('Wähle Deinen Hai!', 230, 200);
+    ctx.fillStyle = "white"; 
+    ctx.font = '24px serif';
+    drawWithParamsCoordsSizeFlipped(document.getElementById("shark"), 200, 230, 0.3, true);
+    drawWithParamsCoordsSizeFlipped(document.getElementById("whale"), 200, 280, 0.3, true);
+    ctx.fillText('Enter f\u00fcr den wei\u00DFen Hai', 300, 260);
+    ctx.fillText('Leertaste f\u00fcr den Walhai', 300, 310);
   }
 
   function drawTimeBar() {
@@ -670,10 +685,10 @@ $('document').ready(function(){
   }
  
   function initialize() {
-    $('#infoModal').modal('show');
-    document.getElementById("sharkimage").src="../../resources/binary/img/screenshot.JPG";
-    document.getElementById("text").textContent="In diesem Spiel steuerst du einen hungrigen Hai, der auf der Suche nach Nahrung ist. Mit der oberen und unteren Pfeiltaste bewegst du den Hai. Wenn du die richtige Nahrung frisst, erhältst du mehr Energie. Pass jedoch auf, dass du nicht etwas Falsches frisst, da falsche Nahrung deine Energie reduziert.";
-    document.getElementById("infoModalLongTitle").innerHTML ="Spielanleitung";  
+    $('#introductionModal').modal('show');
+    //document.getElementById("sharkimage").src="../../resources/binary/img/screenshot.JPG";
+    //document.getElementById("text").textContent="In diesem Spiel steuerst du einen hungrigen Hai, der auf der Suche nach Nahrung ist. Mit der oberen und unteren Pfeiltaste bewegst du den Hai. Wenn du die richtige Nahrung frisst, erhältst du mehr Energie. Pass jedoch auf, dass du nicht etwas Falsches frisst, da falsche Nahrung deine Energie reduziert.";
+    //document.getElementById("infoModalLongTitle").innerHTML ="Spielanleitung"; 
   }
 
   // Start the manual -> After that start the game...
@@ -710,19 +725,43 @@ $('document').ready(function(){
     ctx.drawImage(object, -width/2, -height/2, width, height);
     ctx.restore();
   }
- 
+
+ var introduction = true;
  function continueGame(){
+   if (introduction) introduction = false;
    gameLoop = setInterval(globalDraw, drawPerMs);
  }
 
   document.addEventListener('keydown', (e) => {
-    if (!gameOver && !win) {
-      if (e.code === "ArrowUp" && shark.dy > -10)       shark.dy -= shark.acceleration;
-      else if (e.code === "ArrowDown" && shark.dy < 10) shark.dy += shark.acceleration;
-    }
-    else if (e.code === "Enter") {
-      restartGame();
+    if (!introduction) {
+      if (!gameOver && !win && !choosingSharkState) {
+        if (e.code === "ArrowUp" && shark.dy > -10)       shark.dy -= shark.acceleration;
+        else if (e.code === "ArrowDown" && shark.dy < 10) shark.dy += shark.acceleration;
+      } 
+      
+      else if (choosingSharkState) {
+        if(e.code === "Enter") {
+          choosingSharkState = false;
+          sharkIdx = 0;
+          restartGame();
+
+        } else if(e.code === "Space") {
+          choosingSharkState = false;
+          sharkIdx = 1;
+          restartGame();
+        }
+      } 
+      
+      else if ((gameOver || win) && e.code === "Enter") {
+        enterPressed();
+      } 
     }
   });
+  document.getElementById("continue2").addEventListener("click", continueGame); 
   document.getElementById("continue").addEventListener("click", continueGame); 
+  $('#introductioncarousel').on('slid.bs.carousel', function (event) {
+    if(event.to === 4) {
+      $('#continue2')[0].disabled=false;
+    }
+  })
 });
