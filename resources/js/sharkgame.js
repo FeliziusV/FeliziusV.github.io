@@ -15,6 +15,20 @@ $('document').ready(function(){
   var damageStaminaBarColorLight = 'red';
   var increaseStaminaBarColor = 'green';
   var defaultStaminaBarColor = 'lightgreen';
+  var ckleine_Fische=0;
+  var cDelphine=0;
+  var cOktobusse=0;
+  var cPlanktone=0;
+  var cSeepferdchen=0;
+  var cRobben=0;
+  var cSchildkröten=0;
+  var cSeesterne=0;
+  var cMenschen=0;
+  var cSchatztruhen=0;
+  var cPlastik=0;
+  var cSteine=0;
+  var cAnker=0;
+
   
   class human{
     static NAMES = ['diver', 'surfer'];
@@ -255,8 +269,63 @@ $('document').ready(function(){
 
     eat(object) {
       if (object.hasOwnProperty('type')) {
+		  
         // game objects with type
         if(!object.deleted && object.visible) {
+		  if(object.type=="greenfish"){
+			  ckleine_Fische++;
+		  }
+		   if(object.type=="bluefish"){
+			  ckleine_Fische++;
+		  }
+		    if(object.type=="orangefish"){
+			  ckleine_Fische++;
+		  }
+		     if(object.type=="dolphin"){
+			  cDelphine++;
+		  }
+		   if(object.type=="seaturtle"){
+			  cSchildkröten++;
+		  }
+		   if(object.type=="seal"){
+			  cRobben++;
+		  }
+		   if(object.type=="diver"){
+			  cMenschen++;
+		  }
+		   if(object.type=="surfer"){
+			  cMenschen++;
+		  }
+		   if(object.type=="octopus"){
+			  cOktobusse++;
+		  }
+		   if(object.type=="plankton"){
+			  cPlanktone++;
+		  }
+		   if(object.type=="plankton_blue"){
+			  cPlanktone++;
+		  }
+		   if(object.type=="seahorse_green"){
+			  cSeepferdchen++;
+		  }
+		   if(object.type=="seahorse_pink"){
+			  cSeepferdchen++;
+		  }
+		   if(object.type=="anchor"){
+			  cAnker++;
+		  }
+		   if(object.type=="bottle"){
+			  cPlastik++;
+		  }
+		   if(object.type=="rock"){
+			  cSteine++;
+		  }
+		   if(object.type=="treasure"){
+			  cSchatztruhen++;
+		  }
+		
+		  
+		  
           if (object.type in this.diet) {
             // object is in diet of shark -> gain stamina!
             object.visible = false;
@@ -590,10 +659,36 @@ $('document').ready(function(){
     ctx.globalAlpha = 1.0;
     ctx.font = '48px serif';
     ctx.fillStyle = "#dd4444"; 
-    ctx.fillText('GAME OVER', 250, 200);
+    ctx.fillText('GAME OVER', 200, 200);
     ctx.fillStyle = "white"; 
     ctx.font = '24px serif';
-    ctx.fillText('Enter f\u00fcr Neustart', 300, 250);
+    ctx.fillText('Enter f\u00fcr Neustart ', 250, 250);
+	ctx.fillText('kleine Fische '+ckleine_Fische, 100, 350);
+	ctx.fillText('Delphine '+cDelphine, 300, 350);
+	ctx.fillText('Oktobusse '+cOktobusse, 500, 350);
+	ctx.fillText('Planktone '+cPlanktone, 100, 400);
+	ctx.fillText('Seepferdchen '+cSeepferdchen, 300, 400);
+	ctx.fillText('Robben '+cRobben, 500, 400);
+	ctx.fillText('Schildkröten '+cSchildkröten, 100, 450);
+	ctx.fillText('Seesterne '+cSeesterne, 300, 450);
+	ctx.fillText('Menschen '+cMenschen, 500, 450);
+	ctx.fillText('Schatztruhen '+cSchatztruhen, 100, 300);
+	ctx.fillText('Seesterne '+cSeesterne, 300, 300);
+	ctx.fillText('Plastik '+cPlastik, 500, 300);
+	ctx.fillText('Steine '+cSteine, 100, 300);
+	ctx.fillText('Anker '+cAnker, 300, 300);
+
+
+
+
+
+
+
+
+	
+
+
+
   }
 
   function drawWinScreen() {
@@ -625,6 +720,20 @@ $('document').ready(function(){
     win = false;
     framesPlayed = 0;
     lastframerendered = 1;
+	
+	ckleine_Fische=0;
+ cDelphine=0;
+ cOktobusse=0;
+ cPlanktone=0;
+ cSeepferdchen=0;
+ cRobben=0;
+ cSchildkröten=0;
+ cSeesterne=0;
+ cMenschen=0;
+ cSchatztruhen=0;
+ cPlastik=0;
+ cSteine=0;
+ cAnker=0;
   }
 
   function enterPressed(){
