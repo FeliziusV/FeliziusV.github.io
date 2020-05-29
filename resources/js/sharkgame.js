@@ -659,10 +659,12 @@ $('document').ready(function(){
     ctx.globalAlpha = 1.0;
     ctx.font = '48px serif';
     ctx.fillStyle = "#dd4444"; 
-    ctx.fillText('GAME OVER', 200, 200);
+    ctx.fillText('GAME OVER', 220, 100);
     ctx.fillStyle = "white"; 
     ctx.font = '24px serif';
-    ctx.fillText('Enter f\u00fcr Neustart ', 250, 250);
+    ctx.fillText('Enter f\u00fcr Neustart ', 270, 150)
+	ctx.fillText('Statistik: ', 270, 200);
+
 	ctx.fillText('kleine Fische '+ckleine_Fische, 100, 350);
 	ctx.fillText('Delphine '+cDelphine, 300, 350);
 	ctx.fillText('Oktobusse '+cOktobusse, 500, 350);
@@ -671,12 +673,12 @@ $('document').ready(function(){
 	ctx.fillText('Robben '+cRobben, 500, 400);
 	ctx.fillText('Schildkröten '+cSchildkröten, 100, 450);
 	ctx.fillText('Seesterne '+cSeesterne, 300, 450);
-	ctx.fillText('Menschen '+cMenschen, 500, 450);
+	ctx.fillText('Menschen '+cMenschen, 500, 250);
 	ctx.fillText('Schatztruhen '+cSchatztruhen, 100, 300);
 	ctx.fillText('Seesterne '+cSeesterne, 300, 300);
 	ctx.fillText('Plastik '+cPlastik, 500, 300);
-	ctx.fillText('Steine '+cSteine, 100, 300);
-	ctx.fillText('Anker '+cAnker, 300, 300);
+	ctx.fillText('Steine '+cSteine, 100, 250);
+	ctx.fillText('Anker '+cAnker, 300, 250);
 
 
 
