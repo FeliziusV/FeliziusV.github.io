@@ -700,26 +700,38 @@ $('document').ready(function(){
     ctx.globalAlpha = 1.0;
     ctx.font = '48px serif';
     ctx.fillStyle = "#dd4444"; 
-    ctx.fillText('GAME OVER', 220, 100);
+    ctx.fillText('GAME OVER', 270, 100);
     ctx.fillStyle = "white"; 
     ctx.font = '24px serif';
-    ctx.fillText('Enter f\u00fcr Neustart ', 270, 150)
-	ctx.fillText('Statistik: ', 270, 200);
-
+    ctx.fillText('Enter f\u00fcr Neustart ', 315, 150)
+	ctx.fillText('Statistik: ', 360, 200);
+	drawWithParamsCoordsSizeFlipped(document.getElementById("green_fish"),50,330,0.15,false);
 	ctx.fillText('kleine Fische '+ckleine_Fische, 100, 350);
-	ctx.fillText('Delphine '+cDelphine, 300, 350);
-	ctx.fillText('Oktobusse '+cOktobusse, 500, 350);
+	drawWithParamsCoordsSizeFlipped(document.getElementById("dolphin"),310,330,0.15,true);
+
+	ctx.fillText('Delphine '+cDelphine, 360, 350);
+	drawWithParamsCoordsSizeFlipped(document.getElementById("octopus"),520,330,0.15,true);
+	ctx.fillText('Oktobusse '+cOktobusse, 570, 350);
+	drawWithParamsCoordsSizeFlipped(document.getElementById("plankton"),50,380,0.15,true);
 	ctx.fillText('Planktone '+cPlanktone, 100, 400);
-	ctx.fillText('Seepferdchen '+cSeepferdchen, 300, 400);
-	ctx.fillText('Robben '+cRobben, 500, 400);
+	drawWithParamsCoordsSizeFlipped(document.getElementById("seahorse_pink"),310,380,0.15,false);
+	ctx.fillText('Seepferdchen '+cSeepferdchen, 360, 400);
+	drawWithParamsCoordsSizeFlipped(document.getElementById("seal"),520,380,0.15,false);
+	ctx.fillText('Robben '+cRobben, 570, 400);
+	drawWithParamsCoordsSizeFlipped(document.getElementById("seaturtle"),50,430,0.15,true);
 	ctx.fillText('Schildkröten '+cSchildkröten, 100, 450);
-	ctx.fillText('Seesterne '+cSeesterne, 300, 450);
-	ctx.fillText('Menschen '+cMenschen, 500, 250);
+	drawWithParamsCoordsSizeFlipped(document.getElementById("surfer"),520,230,0.15,true);
+	ctx.fillText('Menschen '+cMenschen, 570, 250);
+	drawWithParamsCoordsSizeFlipped(document.getElementById("treasure"),50,280,0.15,false);
 	ctx.fillText('Schatztruhen '+cSchatztruhen, 100, 300);
-	ctx.fillText('Seesterne '+cSeesterne, 300, 300);
-	ctx.fillText('Plastik '+cPlastik, 500, 300);
+	drawWithParamsCoordsSizeFlipped(document.getElementById("starfish_orange"),310,280,0.15,false);
+	ctx.fillText('Seesterne '+cSeesterne, 360, 300);
+	drawWithParamsCoordsSizeFlipped(document.getElementById("bottle"),520,280,0.15,true);
+	ctx.fillText('Plastik '+cPlastik, 570, 300);
+	drawWithParamsCoordsSizeFlipped(document.getElementById("rock"),50,230,0.15,false);
 	ctx.fillText('Steine '+cSteine, 100, 250);
-	ctx.fillText('Anker '+cAnker, 300, 250);
+	drawWithParamsCoordsSizeFlipped(document.getElementById("anchar"),310,230,0.15,false);
+	ctx.fillText('Anker '+cAnker, 360, 250);
 
 
 
@@ -788,6 +800,7 @@ $('document').ready(function(){
   }
 
   function drawUI() {
+	  drawGameOverScreen()
     drawStaminaBar();
     drawTimeBar();
     if (gameOver && !win && !choosingSharkState) drawGameOverScreen();
