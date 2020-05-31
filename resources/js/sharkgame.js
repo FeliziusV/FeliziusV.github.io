@@ -6,7 +6,7 @@ $('document').ready(function(){
   var bgScrollSpeed = 2;
   var debug = false;
   const drawPerMs = 16;
-  const minutesToPlay = 1;
+  const minutesToPlay = debug ? 5 : 1;
   const framesToPlay = Math.round((minutesToPlay*60*1000)/drawPerMs);
   var framesPlayed = 0;
   var win = false;
@@ -150,10 +150,14 @@ $('document').ready(function(){
       this.blinkingDurationFrames = 0;
       this.maxBlinkingFrames = 100;
       this.lastDamageFrame = 0;
+      this.mouthYPerc = 0;
+      this.collisionBoxSize = 1;
 
       this.diet = undefined;
       this.img = undefined;
       if(type === 'great') {
+        this.mouthYPerc = 0.2;
+        this.collisionBoxSize = 0.35;
         this.idleStaminaDecreaseValue = 0.0015;
         this.imgFlipped = true;
         this.img = document.getElementById("shark");
@@ -182,6 +186,8 @@ $('document').ready(function(){
         };
       }
       else if (type === 'whale') {
+        this.mouthYPerc = 0.675;
+        this.collisionBoxSize = 0.35;
         this.acceleration = 1.05;
         this.idleStaminaDecreaseValue = 0.001;
         this.imgFlipped = false;
@@ -196,7 +202,8 @@ $('document').ready(function(){
           'seahorse_green' : 0.2,
           'seahorse_pink' : 0.2,
           'starfish_orange' : 0.2,
-          'seaturtle' : 0.25
+          'seaturtle' : 0.25,
+          'treasure' : 1.0
         };
         this.damageTable = {
           'diver' : 1.0,
@@ -207,7 +214,6 @@ $('document').ready(function(){
           'anchor' : 0.65,
           'bottle' : 0.35,
           'rock' : 1.0,
-          'treasure' : 0
         };
       }
     }
@@ -220,10 +226,25 @@ $('document').ready(function(){
       if (this.y < 0) { this.y=0; toReset=true; }
       else if (this.y > canvas.height-seaBorderMargin) { this.y=canvas.height-seaBorderMargin; toReset=true; }
 
+      this.drawArc();
       if (this.visible) drawWithParamsCoordsSizeFlipped(this.img, this.x, this.y, this.imgSize, this.imgFlipped);
-
       this.decelerate(toReset);
       this.decreaseStamina();
+    }
+
+    drawArc() {
+      var sw = this.img.width*this.imgSize;
+      var sh = this.img.height*this.imgSize;
+      var sx = this.x+sw-sw*this.collisionBoxSize;
+      var sy = this.y+sh*this.mouthYPerc;
+      sw = sw*this.collisionBoxSize;
+      sh = sh*this.collisionBoxSize;
+      var arcX = sx + sw/2;
+      var arcY = sy + sh/2;
+
+      ctx.arc(arcX, arcY, 20, 0, 2 * Math.PI);
+      ctx.lineWidth = "3"; 
+      ctx.stroke();
     }
 
     decelerate(toReset) {
@@ -530,40 +551,60 @@ $('document').ready(function(){
 
   function detectCollisionAllObjects() {
     if(!gameOver && !win && !choosingSharkState) {
+      var sw = shark.img.width*shark.imgSize;
+      var sh = shark.img.height*shark.imgSize;
+      var sx = shark.x+sw-sw*shark.collisionBoxSize;
+      var sy = shark.y+sh*shark.mouthYPerc;
+      sw = sw*shark.collisionBoxSize;
+      sh = sh*shark.collisionBoxSize;
+
       if (!gameOver && !win) fishes.forEach(f => { detectCollision(shark, f, true); });
       if (!gameOver && !win) otherFishes.forEach(f => { detectCollision(shark, f, false); });
       if (!gameOver && !win) seaObjects.forEach(o => { detectCollision(shark, o, false); });
       if (!gameOver && !win) humans.forEach(h => { detectCollision(shark, h, false); });
+      if (debug) {
+        ctx.rect(sx, sy, sw, sh);
+        ctx.strokeStyle = "red"; 
+        ctx.lineWidth = "2"; 
+        ctx.stroke(); 
+      }
     }
   }
 
   function detectCollision(sharkObj, coliderObj, isDietObj) {
-    if (sharkObj.x < coliderObj.x + coliderObj.img.width*coliderObj.imgSize &&
-      sharkObj.x + sharkObj.img.width*sharkObj.imgSize > coliderObj.x &&
-      sharkObj.y < coliderObj.y + coliderObj.img.height*coliderObj.imgSize &&
-      sharkObj.y + sharkObj.img.height*sharkObj.imgSize > coliderObj.y) {
-       
+
+    var sw = sharkObj.img.width*sharkObj.imgSize;
+    var sh = sharkObj.img.height*sharkObj.imgSize;
+    var sx = sharkObj.x+sw-sw*sharkObj.collisionBoxSize;
+    var sy = sharkObj.y+sh*sharkObj.mouthYPerc;
+    sw = sw*sharkObj.collisionBoxSize;
+    sh = sh*sharkObj.collisionBoxSize;
+
+    var cx = coliderObj.x;
+    var cy = coliderObj.y;
+    var cw = coliderObj.img.width*coliderObj.imgSize;
+    var ch = coliderObj.img.height*coliderObj.imgSize;
+
+    if (sx < cx + cw &&
+      sx + sw > cx &&
+      sy < cy + ch &&
+      sy + sh > cy) {
+
         sharkObj.eat(coliderObj);
     } else if (isDietObj) {
       //move away from shark
-      if (Math.abs((sharkObj.x+sharkObj.img.width*sharkObj.imgSize)- coliderObj.x) < coliderObj.sightDistance &&
-          Math.abs((sharkObj.y+sharkObj.img.width*sharkObj.imgSize)- coliderObj.y) < coliderObj.sightDistance) {
+      if (Math.abs((sx+sw)- cx) < coliderObj.sightDistance &&
+          Math.abs((sy+sw)- cy) < coliderObj.sightDistance) {
         var sign = -1;
-        if ((sharkObj.y - coliderObj.y) < 0) sign = 1;
+        if ((sy - cy) < 0) sign = 1;
         coliderObj.dy = sign*coliderObj.fleeSpeed;
       } else {
         coliderObj.dy = 0;
       }
     }
 
-
     if (debug) {
-      ctx.rect(sharkObj.x, sharkObj.y, sharkObj.img.width*sharkObj.imgSize, sharkObj.img.height*sharkObj.imgSize)
-      ctx.strokeStyle = "red"; 
-      ctx.lineWidth = "2"; 
-      ctx.stroke(); 
-
-      ctx.rect(coliderObj.x, coliderObj.y, coliderObj.img.width*coliderObj.imgSize, coliderObj.img.height*coliderObj.imgSize)
+      ctx.rect(cx, cy, cw, ch)
       ctx.strokeStyle = "green"; 
       ctx.lineWidth = "2"; 
       ctx.stroke(); 
@@ -848,6 +889,7 @@ $('document').ready(function(){
       if (!gameOver && !win && !choosingSharkState) {
         if (e.code === "ArrowUp" && shark.dy > -10)       shark.dy -= shark.acceleration;
         else if (e.code === "ArrowDown" && shark.dy < 10) shark.dy += shark.acceleration;
+        else if (debug && e.code === "Space") shark.increaseStamina(1.0);
       } 
       
       else if (choosingSharkState) {
