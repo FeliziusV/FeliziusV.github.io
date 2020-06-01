@@ -105,6 +105,12 @@ canvas {
 #seaturtle{
 	display: none;
 }
+#circleSmall{
+	display: none;
+}
+#circleBig{
+	display: none;
+}
 
 #introduction-modal-body{
 	padding:0px !important;

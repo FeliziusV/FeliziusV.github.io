@@ -152,13 +152,16 @@ $('document').ready(function(){
       this.lastDamageFrame = 0;
       this.mouthYPerc = 0;
       this.collisionBoxSize = 1;
+      this.circleS = document.getElementById("circleSmall");
+      this.circleB = document.getElementById("circleBig");
 
       this.diet = undefined;
       this.img = undefined;
       if(type === 'great') {
         this.mouthYPerc = 0.2;
+        this.circleYCorrection = 1.0;
         this.collisionBoxSize = 0.35;
-        this.idleStaminaDecreaseValue = 0.0015;
+        this.idleStaminaDecreaseValue = 0.0013;
         this.imgFlipped = true;
         this.img = document.getElementById("shark");
         this.imgSize = 0.4;
@@ -179,20 +182,20 @@ $('document').ready(function(){
           'seahorse_green' : 0.05,
           'seahorse_pink' : 0.05,
           'starfish_orange' : 0.05,
-          'anchor' : 0.65,
-          'bottle' : 0.35,
-          'rock' : 1.0,
-          'treasure' : 0
+          'anchor' : 0.3,
+          'bottle' : 0.25,
+          'rock' : 0.3
         };
       }
       else if (type === 'whale') {
         this.mouthYPerc = 0.675;
         this.collisionBoxSize = 0.35;
         this.acceleration = 1.05;
-        this.idleStaminaDecreaseValue = 0.001;
+        this.idleStaminaDecreaseValue = 0.0009;
         this.imgFlipped = false;
         this.img = document.getElementById("whale");
         this.imgSize = 0.5;
+        this.circleYCorrection = 0.8;
         this.diet = {
           'greenfish' : 0.1,
           'bluefish' : 0.1, 
@@ -233,6 +236,7 @@ $('document').ready(function(){
     }
 
     drawArc() {
+      if(framesPlayed > 320) return;
       var sw = this.img.width*this.imgSize;
       var sh = this.img.height*this.imgSize;
       var sx = this.x+sw-sw*this.collisionBoxSize;
@@ -242,9 +246,12 @@ $('document').ready(function(){
       var arcX = sx + sw/2;
       var arcY = sy + sh/2;
 
-      ctx.arc(arcX, arcY, 20, 0, 2 * Math.PI);
-      ctx.lineWidth = "3"; 
-      ctx.stroke();
+      //ctx.arc(arcX, arcY, 20, 0, 2 * Math.PI);
+      //ctx.lineWidth = "3"; 
+      //ctx.stroke();
+      var circleToDraw = this.circleS;
+      for(var i = 0; i < 32; i++) { if(framesPlayed % 64 == i) { circleToDraw = this.circleB; } }
+      if (this.visible) drawWithParamsCoordsSizeFlipped(circleToDraw, sx+sh/2, sy-sh*this.circleYCorrection, 0.05, false);
     }
 
     decelerate(toReset) {
