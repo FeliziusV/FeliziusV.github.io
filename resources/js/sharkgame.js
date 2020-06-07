@@ -4,7 +4,7 @@ $('document').ready(function(){
   var ctx = canvas.getContext("2d");
   var seaBorderMargin = 60;
   var bgScrollSpeed = 2;
-  var debug = false;
+  var debug = true;
   const drawPerMs = 16;
   const minutesToPlay = debug ? 5 : 1;
   const framesToPlay = Math.round((minutesToPlay*60*1000)/drawPerMs);
@@ -241,9 +241,11 @@ $('document').ready(function(){
       sh = sh*this.collisionBoxSize;
       var arcX = sx + sw/2;
       var arcY = sy + sh/2;
-
+	  ctx.beginPath();
       ctx.arc(arcX, arcY, 20, 0, 2 * Math.PI);
       ctx.lineWidth = "3"; 
+	  ctx.strokeStyle = '#FF0000';
+
       ctx.stroke();
     }
 
@@ -564,7 +566,7 @@ $('document').ready(function(){
       if (!gameOver && !win) humans.forEach(h => { detectCollision(shark, h, false); });
       if (debug) {
         ctx.rect(sx, sy, sw, sh);
-        ctx.strokeStyle = "red"; 
+        ctx.strokeStyle = "FF0000"; 
         ctx.lineWidth = "2"; 
         ctx.stroke(); 
       }
@@ -826,6 +828,7 @@ $('document').ready(function(){
   }
 
   function drawUI() {
+
     drawStaminaBar();
     drawTimeBar();
     if (gameOver && !win && !choosingSharkState) drawGameOverScreen();
