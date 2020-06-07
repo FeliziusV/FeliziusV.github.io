@@ -1,10 +1,18 @@
-
+/*
+2020-06-04 TODOs
+- Feedback on eeting things.. (Yummy or Bäh Text would suffice OPTIONAL: Slide food to stamina bar)
+- Buttons on introduction, make visible
+- Remove Up/Down Icons on second Introduction Slide
+- Increase Spawn rate, so no 'Holes' appear
+- Do not spawn diet fishes in the near of damaging fishes
+- Statistics: Colorize Font Red if the fishes made damage, green otherwise (Maybe Just compare if the fish/object) is in diet-Array or damage-Array of the shark.
+*/
 $('document').ready(function(){
   var canvas = document.getElementById("game");
   var ctx = canvas.getContext("2d");
   var seaBorderMargin = 60;
   var bgScrollSpeed = 2;
-  var debug = true;
+  var debug = false;
   const drawPerMs = 16;
   const minutesToPlay = debug ? 5 : 1;
   const framesToPlay = Math.round((minutesToPlay*60*1000)/drawPerMs);
@@ -152,13 +160,16 @@ $('document').ready(function(){
       this.lastDamageFrame = 0;
       this.mouthYPerc = 0;
       this.collisionBoxSize = 1;
+      this.circleS = document.getElementById("circleSmall");
+      this.circleB = document.getElementById("circleBig");
 
       this.diet = undefined;
       this.img = undefined;
       if(type === 'great') {
         this.mouthYPerc = 0.2;
+        this.circleYCorrection = 1.0;
         this.collisionBoxSize = 0.35;
-        this.idleStaminaDecreaseValue = 0.0015;
+        this.idleStaminaDecreaseValue = 0.0011;
         this.imgFlipped = true;
         this.img = document.getElementById("shark");
         this.imgSize = 0.4;
@@ -171,28 +182,28 @@ $('document').ready(function(){
           'seal' : 0.55
         };
         this.damageTable = {
-          'diver' : 1.0,
-          'surfer' : 1.0,
+          'diver' : 0.25,
+          'surfer' : 0.25,
           'octopus' : 0.2,
           'plankton' : 0.05,
           'plankton_blue' : 0.05,
           'seahorse_green' : 0.05,
           'seahorse_pink' : 0.05,
           'starfish_orange' : 0.05,
-          'anchor' : 0.65,
-          'bottle' : 0.35,
-          'rock' : 1.0,
-          'treasure' : 0
+          'anchor' : 0.3,
+          'bottle' : 0.25,
+          'rock' : 0.3
         };
       }
       else if (type === 'whale') {
         this.mouthYPerc = 0.675;
         this.collisionBoxSize = 0.35;
         this.acceleration = 1.05;
-        this.idleStaminaDecreaseValue = 0.001;
+        this.idleStaminaDecreaseValue = 0.0008;
         this.imgFlipped = false;
         this.img = document.getElementById("whale");
         this.imgSize = 0.5;
+        this.circleYCorrection = 0.8;
         this.diet = {
           'greenfish' : 0.1,
           'bluefish' : 0.1, 
@@ -206,14 +217,14 @@ $('document').ready(function(){
           'treasure' : 1.0
         };
         this.damageTable = {
-          'diver' : 1.0,
-          'surfer' : 1.0,
-          'octopus' : 0.3,
-          'dolphin' : 0.35,
-          'seal' : 0.35,
-          'anchor' : 0.65,
-          'bottle' : 0.35,
-          'rock' : 1.0,
+          'diver' : 0.25,
+          'surfer' : 0.25,
+          'octopus' : 0.15,
+          'dolphin' : 0.15,
+          'seal' : 0.15,
+          'anchor' : 0.3,
+          'bottle' : 0.25,
+          'rock' : 0.3,
         };
       }
     }
@@ -233,6 +244,7 @@ $('document').ready(function(){
     }
 
     drawArc() {
+      if(framesPlayed > 320) return;
       var sw = this.img.width*this.imgSize;
       var sh = this.img.height*this.imgSize;
       var sx = this.x+sw-sw*this.collisionBoxSize;
@@ -241,12 +253,13 @@ $('document').ready(function(){
       sh = sh*this.collisionBoxSize;
       var arcX = sx + sw/2;
       var arcY = sy + sh/2;
-	  ctx.beginPath();
-      ctx.arc(arcX, arcY, 20, 0, 2 * Math.PI);
-      ctx.lineWidth = "3"; 
-	  ctx.strokeStyle = '#FF0000';
 
-      ctx.stroke();
+      //ctx.arc(arcX, arcY, 20, 0, 2 * Math.PI);
+      //ctx.lineWidth = "3"; 
+      //ctx.stroke();
+      var circleToDraw = this.circleS;
+      for(var i = 0; i < 32; i++) { if(framesPlayed % 64 == i) { circleToDraw = this.circleB; } }
+      if (this.visible) drawWithParamsCoordsSizeFlipped(circleToDraw, sx+sh/2, sy-sh*this.circleYCorrection, 0.05, false);
     }
 
     decelerate(toReset) {
@@ -502,8 +515,8 @@ $('document').ready(function(){
       this.x += this.dx;
       this.y += this.dy;
 
-      if (this.x < ((this.img.width*this.imgSize*-1)-20)) { this.visible=false; this.dx=0; this.dy=0; this.deleted = true; }
-      if (this.visible) drawWithParamsCoordsSizeFlipped(this.img, this.x, this.y, this.imgSize, this.imgFlipped);
+      if (this.img !== undefined && this.x < ((this.img.width*this.imgSize*-1)-20)) { this.visible=false; this.dx=0; this.dy=0; this.deleted = true; }
+      if (this.img !== undefined && this.visible) drawWithParamsCoordsSizeFlipped(this.img, this.x, this.y, this.imgSize, this.imgFlipped);
     }
   }
 
@@ -566,7 +579,7 @@ $('document').ready(function(){
       if (!gameOver && !win) humans.forEach(h => { detectCollision(shark, h, false); });
       if (debug) {
         ctx.rect(sx, sy, sw, sh);
-        ctx.strokeStyle = "FF0000"; 
+        ctx.strokeStyle = "red"; 
         ctx.lineWidth = "2"; 
         ctx.stroke(); 
       }
@@ -706,7 +719,8 @@ $('document').ready(function(){
     ctx.fillStyle = "white"; 
     ctx.font = '24px serif';
     ctx.fillText('Enter f\u00fcr Neustart ', 315, 150)
-	ctx.fillText('Statistik: ', 360, 200);
+    ctx.fillText('Statistik: ', 360, 200);
+    ctx.font = '20px serif';
 	drawWithParamsCoordsSizeFlipped(document.getElementById("green_fish"),50,330,0.15,false);
 	ctx.fillText('kleine Fische '+ckleine_Fische, 100, 350);
 	drawWithParamsCoordsSizeFlipped(document.getElementById("dolphin"),310,330,0.15,true);
@@ -758,7 +772,8 @@ $('document').ready(function(){
     ctx.fillStyle = "white"; 
     ctx.font = '24px serif';
     ctx.fillText('Enter f\u00fcr Neustart', 315, 150);
-	ctx.fillText('Statistik: ', 360, 200);
+    ctx.fillText('Statistik: ', 360, 200);
+    ctx.font = '20px serif';
 	drawWithParamsCoordsSizeFlipped(document.getElementById("green_fish"),50,330,0.15,false);
 	ctx.fillText('kleine Fische '+ckleine_Fische, 100, 350);
 	drawWithParamsCoordsSizeFlipped(document.getElementById("dolphin"),310,330,0.15,true);
@@ -828,7 +843,6 @@ $('document').ready(function(){
   }
 
   function drawUI() {
-
     drawStaminaBar();
     drawTimeBar();
     if (gameOver && !win && !choosingSharkState) drawGameOverScreen();
