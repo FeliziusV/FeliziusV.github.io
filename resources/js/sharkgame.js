@@ -1,8 +1,7 @@
 /*
 2020-06-04 TODOs
 - Feedback on eeting things.. (Yummy or Bäh Text would suffice OPTIONAL: Slide food to stamina bar)
-- Buttons on introduction, make visible
-- Remove Up/Down Icons on second Introduction Slide
+
 - Increase Spawn rate, so no 'Holes' appear
 - Do not spawn diet fishes in the near of damaging fishes
 - Statistics: Colorize Font Red if the fishes made damage, green otherwise (Maybe Just compare if the fish/object) is in diet-Array or damage-Array of the shark.
