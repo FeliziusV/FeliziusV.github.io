@@ -1,10 +1,6 @@
 /*
 2020-06-04 TODOs
 - Feedback on eeting things.. (Yummy or Bäh Text would suffice OPTIONAL: Slide food to stamina bar)
-
-
-- Do not spawn diet fishes in the near of damaging fishes
-- Statistics: Colorize Font Red if the fishes made damage, green otherwise (Maybe Just compare if the fish/object) is in diet-Array or damage-Array of the shark.
 */
 $('document').ready(function(){
   var canvas = document.getElementById("game");
@@ -411,7 +407,25 @@ $('document').ready(function(){
       this.deleted = false;
       this.type = type;
       this.x = canvas.width;
-      this.y =Math.floor(Math.random() * (450 - 70 + 1) + 70);
+      
+      if (shark === undefined || otherFishes === undefined || otherFishes.length === 0) { 
+        this.y =Math.floor(Math.random() * (450 - 70 + 1) + 70); 
+      }
+      else if (type in shark.diet) {
+        let ys = otherFishes.map(a => a.y);
+        ys.push(50);
+        ys.sort(function(a, b){return a-b});
+        var chosenYIdx = 0;
+        var maxYDist = -1;
+        for(var i = 0; i < ys.length-1; i++) {
+          if((ys[i+1] - ys[i]) > maxYDist) {
+            chosenYIdx=i;
+            maxYDist = ys[i+1]-ys[i];
+          }
+        }
+        this.y = ys[chosenYIdx]+(maxYDist/2.0);
+      } else this.y =Math.floor(Math.random() * (450 - 70 + 1) + 70); 
+
       this.dy = 0;
       this.dx = -2;
       this.imgSize = 1.0;
@@ -933,16 +947,21 @@ $('document').ready(function(){
   }
 
  var introduction = true;
+ var isButtonRelieved = true;
  function continueGame(){
    if (introduction) introduction = false;
    gameLoop = setInterval(globalDraw, drawPerMs);
  }
 
+  document.addEventListener('keyup', (e) => {
+    if (e.code === "ArrowUp" || e.code === "ArrowDown") isButtonRelieved = true;   
+  });
+
   document.addEventListener('keydown', (e) => {
     if (!introduction) {
       if (!gameOver && !win && !choosingSharkState) {
-        if (e.code === "ArrowUp" && shark.dy > -10)       shark.dy -= shark.acceleration;
-        else if (e.code === "ArrowDown" && shark.dy < 10) shark.dy += shark.acceleration;
+        if (e.code === "ArrowUp" && shark.dy > -10 && isButtonRelieved)       { shark.dy -= shark.acceleration; isButtonRelieved = false}
+        else if (e.code === "ArrowDown" && shark.dy < 10 && isButtonRelieved) { shark.dy += shark.acceleration; isButtonRelieved = false}
         else if (debug && e.code === "Space") shark.increaseStamina(1.0);
       } 
       
