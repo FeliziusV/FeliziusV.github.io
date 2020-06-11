@@ -2,7 +2,7 @@
 2020-06-04 TODOs
 - Feedback on eeting things.. (Yummy or Bäh Text would suffice OPTIONAL: Slide food to stamina bar)
 
-- Increase Spawn rate, so no 'Holes' appear
+
 - Do not spawn diet fishes in the near of damaging fishes
 - Statistics: Colorize Font Red if the fishes made damage, green otherwise (Maybe Just compare if the fish/object) is in diet-Array or damage-Array of the shark.
 */
@@ -643,7 +643,7 @@ $('document').ready(function(){
   var lastframerendered = 1;
   function generateObjects() {
     if (!gameOver && !win && !choosingSharkState) {
-      const maxfishesrendered = 6;
+      const maxfishesrendered = 10;
       const seastuffratio = 0.1;
       const otherfishesratio = 0.65;
       const humansratio = 0.05;
