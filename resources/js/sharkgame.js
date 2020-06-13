@@ -151,6 +151,7 @@ $('document').ready(function(){
       this.imgFlipped = false;
       this.acceleration = 1.2;
       this.blinkingDurationFrames = 0;
+      this.textOnEatDurationFrames = 0;
       this.maxBlinkingFrames = 100;
       this.lastDamageFrame = 0;
       this.mouthYPerc = 0;
@@ -232,10 +233,26 @@ $('document').ready(function(){
       if (this.y < 0) { this.y=0; toReset=true; }
       else if (this.y > canvas.height-seaBorderMargin) { this.y=canvas.height-seaBorderMargin; toReset=true; }
 
+      this.drawEatText();
       this.drawArc();
       if (this.visible) drawWithParamsCoordsSizeFlipped(this.img, this.x, this.y, this.imgSize, this.imgFlipped);
       this.decelerate(toReset);
       this.decreaseStamina();
+    }
+
+    drawEatText() {
+      if (this.textOnEatDurationFrames < 0) {
+        this.textOnEatDurationFrames++;
+        ctx.font = '16px serif';
+        ctx.fillStyle = "red"; 
+        ctx.fillText('Bäh!', this.x+this.img.width*this.imgSize*0.5, this.y);
+
+      } else if (this.textOnEatDurationFrames > 0) {
+        this.textOnEatDurationFrames--;
+        ctx.font = '16px serif';
+        ctx.fillStyle = "green"; 
+        ctx.fillText('Yummy!', this.x+this.img.width*this.imgSize*0.5, this.y);
+      } 
     }
 
     drawArc() {
@@ -363,7 +380,7 @@ $('document').ready(function(){
             
             var staminaToIncrease = this.diet[object.type];
             this.blinkingDurationFrames = Math.ceil(this.maxBlinkingFrames*staminaToIncrease);
-
+            this.textOnEatDurationFrames = 75;
             this.increaseStamina(staminaToIncrease);
 
           } else if (object.type in this.damageTable) {
@@ -372,7 +389,7 @@ $('document').ready(function(){
             
             var staminaToDecrease = this.damageTable[object.type];
             this.blinkingDurationFrames = -(Math.ceil(this.maxBlinkingFrames*staminaToDecrease));
-            
+            this.textOnEatDurationFrames = -75;
             this.decreaseStamina(staminaToDecrease); 
 			      if(object.hasOwnProperty("h1")){
 				      $('#infoModal').modal('show');
